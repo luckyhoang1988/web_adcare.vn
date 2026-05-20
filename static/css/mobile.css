@@ -88,10 +88,12 @@
   .card-item .card-title { font-size: 14.5px; }
 
   /* Stats */
-  .stat-number  { font-size: 26px; }
-  .stat-icon    { font-size: 24px; margin-bottom: 6px; }
-  .stat-label   { font-size: 11.5px; }
-  .stat-box     { padding: 16px 8px; }
+  .stats-section  { padding: 24px 0; }
+  .stat-number    { font-size: 26px; }
+  .stat-icon      { font-size: 24px; margin-bottom: 6px; }
+  .stat-label     { font-size: 11.5px; }
+  .stat-box       { padding: 16px 8px; }
+  .stat-box-divider::after { display: none; }
 
   /* Partners section */
   .partners-section { padding: 32px 0; }

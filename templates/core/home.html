@@ -74,17 +74,19 @@
 {% if stat_items %}
 <section class="stats-section">
   <div class="container">
-    <div class="row g-0">
-      {% for stat in stat_items %}
-      <div class="col-6 col-md-3">
-        <div class="stat-box {% if not forloop.last %}border-end border-white border-opacity-10{% endif %}">
-          <div class="stat-icon"><i class="{{ stat.icon }}"></i></div>
-          <div class="stat-number" data-target="{{ stat.number }}">{{ stat.number }}</div>
-          <div class="stat-label">{{ stat.label }}</div>
-          {% if stat.description %}<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;">{{ stat.description }}</div>{% endif %}
+    <div class="stats-wrapper">
+      <div class="row g-0 justify-content-center">
+        {% for stat in stat_items %}
+        <div class="col-6 col-md">
+          <div class="stat-box {% if not forloop.last %}stat-box-divider{% endif %}">
+            <div class="stat-icon"><i class="{{ stat.icon }}"></i></div>
+            <div class="stat-number" data-target="{{ stat.number }}">{{ stat.number }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+            {% if stat.description %}<div class="stat-desc">{{ stat.description }}</div>{% endif %}
+          </div>
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
   </div>
 </section>
@@ -108,9 +110,9 @@
         <div class="row g-2 mt-3">
           {% for f in features %}
           <div class="col-12 col-sm-6">
-            <div style="display:flex;align-items:flex-start;gap:10px;">
-              <i class="{{ f.icon }}" style="color:var(--accent);font-size:17px;flex-shrink:0;margin-top:2px;"></i>
-              <span style="font-size:14px;color:var(--text);">{{ f.text }}</span>
+            <div class="about-feature-item">
+              <i class="{{ f.icon }} about-feature-icon"></i>
+              <span class="about-feature-text">{{ f.text }}</span>
             </div>
           </div>
           {% endfor %}

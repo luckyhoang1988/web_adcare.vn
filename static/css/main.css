@@ -178,3 +178,30 @@ img { max-width: 100%; height: auto; }
 .bg-navy-dark { background-color: var(--navy-dark) !important; }
 .text-navy { color: var(--navy) !important; }
 .text-accent { color: var(--accent) !important; }
+
+/* ---- About features ---- */
+.about-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--light);
+  border-radius: var(--radius);
+  border-left: 4px solid var(--accent);
+  transition: var(--transition);
+}
+.about-feature-item:hover {
+  background: #e6f4d7;
+  transform: translateX(4px);
+}
+.about-feature-icon {
+  flex-shrink: 0;
+  font-size: 18px;
+  color: var(--accent);
+}
+.about-feature-text {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 500;
+  line-height: 1.5;
+}
