@@ -1,6 +1,16 @@
+from django import forms
 from django.contrib import admin
 from django.utils.html import mark_safe
+from ckeditor.widgets import CKEditorWidget
 from .models import NewsCategory, Article
+
+
+class ArticleAdminForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorWidget(), label='Nội dung')
+
+    class Meta:
+        model = Article
+        fields = '__all__'
 
 
 @admin.register(NewsCategory)
@@ -13,6 +23,7 @@ class NewsCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
+    form = ArticleAdminForm
     list_display = ('title', 'category', 'author', 'status', 'is_featured', 'published_at', 'preview_image')
     list_editable = ('status', 'is_featured')
     list_display_links = ('title',)

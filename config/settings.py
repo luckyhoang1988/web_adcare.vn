@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third party
     'django_resized',
+    'ckeditor',
     # Local apps
     'apps.core',
     'apps.products',
@@ -97,6 +98,27 @@ STORAGES = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SILENCED_SYSTEM_CHECKS = ['ckeditor.W001']
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'language': 'vi',
+        'toolbar': [
+            ['Format', 'Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink', '-', 'Image', 'Table', 'HorizontalRule'],
+            ['TextColor', 'BGColor'],
+            ['Undo', 'Redo', '-', 'Source'],
+        ],
+        'height': 480,
+        'width': '100%',
+        'extraPlugins': 'justify,colorbutton,colordialog',
+        'removePlugins': 'elementspath',
+        'resize_enabled': True,
+    },
+}
 
 LOGIN_URL = '/admin/login/'
 LOGIN_REDIRECT_URL = '/admin/'

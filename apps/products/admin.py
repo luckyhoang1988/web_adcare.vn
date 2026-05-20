@@ -1,6 +1,16 @@
+from django import forms
 from django.contrib import admin
 from django.utils.html import mark_safe
+from ckeditor.widgets import CKEditorWidget
 from .models import ProductCategory, Product, ProductImage
+
+
+class ProductAdminForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget(), label='Mô tả chi tiết', required=False)
+
+    class Meta:
+        model = Product
+        fields = '__all__'
 
 
 class ProductImageInline(admin.TabularInline):
@@ -19,6 +29,7 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
     list_display = ('name', 'category', 'brand', 'is_featured', 'is_active', 'order', 'preview_image')
     list_editable = ('is_featured', 'is_active', 'order')
     list_display_links = ('name',)
