@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dịch vụ{% endblock %}
+
+{% block content %}
+
+<div class="page-header text-center">
+  <div class="container">
+    <h1>Dịch vụ của chúng tôi</h1>
+    <p>Lắp đặt, bảo trì và tư vấn hệ thống an ninh chuyên nghiệp</p>
+  </div>
+</div>
+
+<section class="section-pad">
+  <div class="container">
+    {% if services %}
+    <div class="row g-4">
+      {% for service in services %}
+      <div class="col-lg-4 col-md-6">
+        <div class="card-item">
+          <div class="card-img-wrap">
+            <a href="{{ service.get_absolute_url }}">
+              <img src="{{ service.image.url }}" alt="{{ service.name }}">
+            </a>
+          </div>
+          <div class="card-body">
+            {% if service.icon %}
+            <div style="font-size:24px;color:var(--accent);margin-bottom:8px;"><i class="{{ service.icon }}"></i></div>
+            {% endif %}
+            <h3 class="card-title">
+              <a href="{{ service.get_absolute_url }}" style="color:inherit;">{{ service.name }}</a>
+            </h3>
+            {% if service.short_desc %}<p class="card-text">{{ service.short_desc }}</p>{% endif %}
+            <a href="{{ service.get_absolute_url }}" class="card-link">Xem chi tiết <i class="fas fa-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5" style="color:var(--text-muted);">
+      <i class="fas fa-tools" style="font-size:48px;margin-bottom:16px;color:var(--border);"></i>
+      <p>Chưa có dịch vụ nào. Vui lòng quay lại sau.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

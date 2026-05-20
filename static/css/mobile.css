@@ -1,0 +1,121 @@
+/* ==============================
+   ADCARE — Mobile Optimization
+   ============================== */
+
+/* ---- Page header (green banner trên mỗi trang) ---- */
+.page-header {
+  background: var(--navy);
+  padding: 50px 0;
+}
+.page-header h1 {
+  color: #fff;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.page-header p {
+  color: rgba(255,255,255,0.7);
+  margin: 0;
+}
+
+/* ---- Mobile category horizontal scroll (products) ---- */
+.mobile-cat-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.mobile-cat-scroll::-webkit-scrollbar { display: none; }
+.mobile-cat-chip {
+  flex-shrink: 0;
+  padding: 7px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--light);
+  color: var(--text);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.mobile-cat-chip.active,
+.mobile-cat-chip:hover {
+  background: var(--navy);
+  color: #fff;
+  border-color: var(--navy);
+}
+
+/* ---- Contact form card ---- */
+.contact-form-card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 36px;
+}
+
+/* ============================================================
+   TABLET  (max 991px)
+   ============================================================ */
+@media (max-width: 991px) {
+  .page-header { padding: 36px 0; }
+  .page-header h1 { font-size: 26px; }
+}
+
+/* ============================================================
+   PHONE  (max 575px)
+   ============================================================ */
+@media (max-width: 575px) {
+  /* Section spacing */
+  .section-pad     { padding: 36px 0 !important; }
+  .section-pad-sm  { padding: 28px 0 !important; }
+
+  /* Page header */
+  .page-header         { padding: 26px 0; }
+  .page-header h1      { font-size: 20px; }
+
+  /* Section titles */
+  .section-title       { font-size: 21px; }
+  .section-subtitle    { font-size: 14px; margin-bottom: 20px; }
+
+  /* Buttons */
+  .btn-primary-custom,
+  .btn-outline-custom  { padding: 10px 20px; font-size: 13.5px; }
+
+  /* Cards */
+  .card-item img       { height: 170px; }
+  .card-item .card-body { padding: 14px; }
+  .card-item .card-title { font-size: 14.5px; }
+
+  /* Stats */
+  .stat-number  { font-size: 26px; }
+  .stat-icon    { font-size: 24px; margin-bottom: 6px; }
+  .stat-label   { font-size: 11.5px; }
+  .stat-box     { padding: 16px 8px; }
+
+  /* Partners section */
+  .partners-section { padding: 32px 0; }
+  .partner-logo     { height: 70px; }
+  .partner-logo img { max-height: 46px; }
+
+  /* Back to top button */
+  #backToTop { bottom: 16px; right: 14px; width: 40px; height: 40px; font-size: 14px; }
+
+  /* Contact form */
+  .contact-form-card { padding: 20px 16px; }
+
+  /* CTA banner */
+  .cta-banner-section { padding: 36px 0 !important; }
+  .cta-banner-section h2 { font-size: 20px !important; }
+}
+
+/* ============================================================
+   VERY SMALL PHONE  (max 380px — iPhone SE, Galaxy A02)
+   ============================================================ */
+@media (max-width: 380px) {
+  .section-title   { font-size: 18px; }
+  .page-header h1  { font-size: 17px; }
+  .stat-number     { font-size: 22px; }
+  .btn-primary-custom,
+  .btn-outline-custom { padding: 9px 16px; font-size: 13px; }
+}

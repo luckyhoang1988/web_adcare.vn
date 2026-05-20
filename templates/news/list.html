@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tin tức{% endblock %}
+
+{% block content %}
+
+<div class="page-header text-center">
+  <div class="container">
+    <h1>Tin tức</h1>
+    <p>Công nghệ an ninh, khuyến mãi và dự án tiêu biểu</p>
+  </div>
+</div>
+
+<section class="section-pad">
+  <div class="container">
+
+    <!-- Category filter -->
+    {% if categories %}
+    <div class="d-flex gap-2 flex-wrap mb-4">
+      <a href="{% url 'news_list' %}"
+         style="padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;background:{% if not current_category %}var(--navy){% else %}var(--light){% endif %};color:{% if not current_category %}#fff{% else %}var(--text){% endif %};">
+        Tất cả
+      </a>
+      {% for cat in categories %}
+      <a href="{% url 'news_list' %}?danh-muc={{ cat.slug }}"
+         style="padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;background:{% if current_category.pk == cat.pk %}var(--navy){% else %}var(--light){% endif %};color:{% if current_category.pk == cat.pk %}#fff{% else %}var(--text){% endif %};">
+        {{ cat.name }}
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if articles %}
+    <div class="row g-4">
+      {% for article in articles %}
+      <div class="col-lg-4 col-md-6">
+        <div class="card-item">
+          <div class="card-img-wrap">
+            <a href="{{ article.get_absolute_url }}">
+              <img src="{{ article.image.url }}" alt="{{ article.title }}">
+            </a>
+          </div>
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              {% if article.category %}
+              <span style="font-size:11px;background:var(--light);color:var(--navy);padding:2px 8px;border-radius:4px;">{{ article.category.name }}</span>
+              {% endif %}
+              {% if article.published_at %}
+              <small style="color:var(--text-muted);font-size:11px;">{{ article.published_at|date:"d/m/Y" }}</small>
+              {% endif %}
+            </div>
+            <h3 class="card-title">
+              <a href="{{ article.get_absolute_url }}" style="color:inherit;">{{ article.title }}</a>
+            </h3>
+            {% if article.summary %}<p class="card-text">{{ article.summary }}</p>{% endif %}
+            <a href="{{ article.get_absolute_url }}" class="card-link">Đọc thêm <i class="fas fa-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if is_paginated %}
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i class="fas fa-chevron-left"></i></a></li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+          <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}"><i class="fas fa-chevron-right"></i></a></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-5" style="color:var(--text-muted);">
+      <i class="fas fa-newspaper" style="font-size:48px;margin-bottom:16px;color:var(--border);"></i>
+      <p>Chưa có bài viết nào.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Gửi thành công{% endblock %}
+
+{% block content %}
+<section class="section-pad">
+  <div class="container">
+    <div class="text-center" style="max-width:500px;margin:0 auto;padding:60px 0;">
+      <div style="width:80px;height:80px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+        <i class="fas fa-check" style="font-size:32px;color:var(--accent);"></i>
+      </div>
+      <h1 style="font-size:26px;font-weight:700;color:var(--navy);margin-bottom:12px;">Gửi yêu cầu thành công!</h1>
+      <p style="color:var(--text-muted);margin-bottom:24px;line-height:1.8;">
+        Cảm ơn bạn đã liên hệ với ADCARE Việt Nam. Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc.
+      </p>
+      {% if site_config.phone %}
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:24px;">
+        Hoặc liên hệ ngay: <a href="tel:{{ site_config.phone }}" style="color:var(--navy);font-weight:600;">{{ site_config.phone }}</a>
+      </p>
+      {% endif %}
+      <a href="{% url 'home' %}" class="btn-primary-custom">
+        <i class="fas fa-home me-2"></i>Về trang chủ
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

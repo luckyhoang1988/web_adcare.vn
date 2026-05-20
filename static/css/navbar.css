@@ -1,0 +1,164 @@
+/* ---- Navbar ---- */
+.main-navbar {
+  background: #fff !important;
+  padding: 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid #eee;
+}
+
+.navbar-brand {
+  padding: 10px 0;
+}
+.navbar-brand img {
+  height: 48px;
+  width: auto;
+}
+.navbar-brand .brand-text {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--navy) !important;
+  letter-spacing: 1px;
+}
+.navbar-brand .brand-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  display: block;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.navbar-nav .nav-link {
+  color: var(--text) !important;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 22px 14px !important;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  transition: var(--transition);
+  position: relative;
+}
+.navbar-nav .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 14px;
+  right: 14px;
+  height: 3px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: var(--transition);
+}
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-item.active .nav-link::after { transform: scaleX(1); }
+.navbar-nav .nav-link:hover { color: var(--navy) !important; }
+.navbar-nav .nav-item.active .nav-link { color: var(--navy) !important; }
+
+/* Dropdown base styles */
+.navbar-nav .dropdown-menu {
+  background: #fff;
+  border: none;
+  border-top: 3px solid var(--accent);
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 8px 0;
+  min-width: 220px;
+}
+.navbar-nav .dropdown-item {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 20px;
+  transition: var(--transition);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.navbar-nav .dropdown-item:hover,
+.navbar-nav .dropdown-item.active {
+  background: var(--light);
+  color: var(--navy);
+}
+.dropdown-divider { border-color: #eee; }
+
+/* Desktop: hover to open with animation */
+@media (min-width: 992px) {
+  .navbar-nav .dropdown-menu {
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    pointer-events: none;
+  }
+  .navbar-nav .dropdown:hover > .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+/* Navbar toggler (mobile) */
+.navbar-toggler {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+}
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2846, 92, 16, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Top info bar */
+.top-bar {
+  background: var(--navy);
+  padding: 6px 0;
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.8);
+}
+.top-bar a { color: rgba(255,255,255,0.8); }
+.top-bar a:hover { color: #fff; }
+.top-bar i { margin-right: 4px; color: var(--accent); }
+
+/* Call-to-action phone button in navbar */
+.main-navbar .btn-primary-custom {
+  font-size: 13px;
+  padding: 8px 18px;
+}
+
+/* Mobile nav */
+@media (max-width: 991px) {
+  .navbar-nav .nav-link {
+    padding: 12px 16px !important;
+    border-bottom: 1px solid #f0f0f0;
+    text-transform: uppercase;
+    font-size: 13px;
+  }
+  .navbar-nav .nav-link::after { display: none; }
+  .navbar-collapse {
+    background: #fff;
+    padding: 8px 0 16px;
+    border-top: 2px solid var(--accent);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+  }
+  .navbar-nav .dropdown-menu {
+    background: var(--light);
+    border-top: none;
+    border-radius: 0;
+    border-left: 3px solid var(--accent);
+    margin-left: 16px;
+    margin-right: 16px;
+    padding: 4px 0;
+    box-shadow: none;
+  }
+  .navbar-nav .dropdown-item {
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--text);
+  }
+}
+
+@media (max-width: 575px) {
+  .navbar-brand img { height: 40px; }
+  .navbar-brand .brand-text { font-size: 17px; }
+}

@@ -1,0 +1,95 @@
+/* ---- Footer ---- */
+.main-footer {
+  background: var(--navy-dark);
+  color: rgba(255,255,255,0.75);
+  padding: 60px 0 0;
+}
+
+.footer-brand .brand-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1px;
+}
+.footer-brand .brand-sub {
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 16px;
+}
+.footer-brand p {
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.65);
+}
+
+.footer-social { display: flex; gap: 10px; margin-top: 16px; }
+.footer-social a {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.7);
+  font-size: 14px;
+  transition: var(--transition);
+}
+.footer-social a:hover { background: var(--accent); color: #fff; }
+
+.footer-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent);
+  display: inline-block;
+}
+
+.footer-links { list-style: none; padding: 0; margin: 0; }
+.footer-links li { margin-bottom: 8px; }
+.footer-links a {
+  color: rgba(255,255,255,0.65);
+  font-size: 13.5px;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-links a::before {
+  content: '›';
+  color: var(--accent);
+  font-size: 16px;
+  line-height: 1;
+}
+.footer-links a:hover { color: #fff; padding-left: 4px; }
+
+.footer-contact-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.65);
+}
+.footer-contact-item i {
+  color: var(--accent);
+  font-size: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+.footer-contact-item a { color: rgba(255,255,255,0.65); }
+.footer-contact-item a:hover { color: #fff; }
+
+.footer-bottom {
+  background: rgba(0,0,0,0.3);
+  padding: 16px 0;
+  margin-top: 40px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+.footer-bottom a { color: rgba(255,255,255,0.5); }
+.footer-bottom a:hover { color: var(--accent); }

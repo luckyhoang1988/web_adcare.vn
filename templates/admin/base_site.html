@@ -1,0 +1,86 @@
+{% extends 'admin/base.html' %}
+{% load i18n %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  /* Navbar top bar */
+  #jazzy-navbar {
+    background-color: #2e5c10 !important;
+    border-bottom: 2px solid #1e3d0a !important;
+  }
+
+  /* Ô tìm kiếm */
+  #jazzy-navbar .form-control-navbar {
+    background-color: rgba(255, 255, 255, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    color: #fff !important;
+    border-radius: 4px 0 0 4px !important;
+  }
+  #jazzy-navbar .form-control-navbar::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+  #jazzy-navbar .btn-navbar {
+    background-color: rgba(255, 255, 255, 0.18) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    color: #fff !important;
+    border-radius: 0 4px 4px 0 !important;
+  }
+
+  /* Nút user — hiển thị username */
+  #jazzy-navbar .nav-item.dropdown > .nav-link.btn {
+    background-color: #7db833 !important;
+    color: #fff !important;
+    border-radius: 20px !important;
+    width: auto !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    margin-left: 8px !important;
+    padding: 0 14px 0 10px !important;
+    border: 2px solid rgba(255,255,255,0.4) !important;
+    transition: background-color 0.2s !important;
+    gap: 6px !important;
+  }
+  #jazzy-navbar .nav-item.dropdown > .nav-link.btn:hover {
+    background-color: #659a28 !important;
+  }
+  .navbar-username {
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  /* Nút Đăng xuất — Jazzmin dùng form POST, không phải <a> */
+  #logout-form button.dropdown-item {
+    color: #fff !important;
+    background-color: #e74c3c !important;
+    font-weight: 700 !important;
+    border-radius: 5px !important;
+    margin: 4px 8px !important;
+    width: calc(100% - 16px) !important;
+    padding: 8px 16px !important;
+  }
+  #logout-form button.dropdown-item:hover {
+    background-color: #c0392b !important;
+    color: #fff !important;
+  }
+</style>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var btn = document.querySelector('#jazzy-navbar .nav-item.dropdown > .nav-link.btn');
+  if (btn) {
+    var span = document.createElement('span');
+    span.className = 'navbar-username';
+    span.textContent = '{{ request.user }}';
+    btn.appendChild(span);
+  }
+});
+</script>
+{% endblock %}

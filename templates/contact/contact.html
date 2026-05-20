@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Liên hệ{% endblock %}
+
+{% block content %}
+
+<div class="page-header text-center">
+  <div class="container">
+    <h1>Liên hệ với chúng tôi</h1>
+    <p>Tư vấn miễn phí — Báo giá trong 24h</p>
+  </div>
+</div>
+
+<section class="section-pad">
+  <div class="container">
+    <div class="row g-5">
+
+      <!-- Contact info -->
+      <div class="col-lg-4">
+        <h2 class="section-title mb-4">Thông tin liên hệ</h2>
+
+        {% if site_config.address %}
+        <div class="d-flex gap-3 mb-4">
+          <div style="width:44px;height:44px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-map-marker-alt" style="color:var(--accent);"></i>
+          </div>
+          <div>
+            <h4 style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px;">Địa chỉ</h4>
+            <p style="color:var(--text-muted);font-size:13.5px;margin:0;">{{ site_config.address }}</p>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if site_config.phone %}
+        <div class="d-flex gap-3 mb-4">
+          <div style="width:44px;height:44px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-phone-alt" style="color:var(--accent);"></i>
+          </div>
+          <div>
+            <h4 style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px;">Điện thoại</h4>
+            <a href="tel:{{ site_config.phone }}" style="color:var(--text-muted);font-size:13.5px;">{{ site_config.phone }}</a>
+            {% if site_config.phone_2 %}
+            <br><a href="tel:{{ site_config.phone_2 }}" style="color:var(--text-muted);font-size:13.5px;">{{ site_config.phone_2 }}</a>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if site_config.email %}
+        <div class="d-flex gap-3 mb-4">
+          <div style="width:44px;height:44px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-envelope" style="color:var(--accent);"></i>
+          </div>
+          <div>
+            <h4 style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px;">Email</h4>
+            <a href="mailto:{{ site_config.email }}" style="color:var(--text-muted);font-size:13.5px;">{{ site_config.email }}</a>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="d-flex gap-3 mb-4">
+          <div style="width:44px;height:44px;background:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-clock" style="color:var(--accent);"></i>
+          </div>
+          <div>
+            <h4 style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:4px;">Giờ làm việc</h4>
+            <p style="color:var(--text-muted);font-size:13.5px;margin:0;">Thứ 2 - Thứ 7: 8:00 - 17:30<br>Chủ nhật: 8:00 - 12:00</p>
+          </div>
+        </div>
+
+        {% if site_config.google_maps_embed %}
+        <div style="margin-top:20px;border-radius:var(--radius);overflow:hidden;">
+          {{ site_config.google_maps_embed|safe }}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Contact form -->
+      <div class="col-lg-8">
+        <div class="contact-form-card">
+          <h2 class="section-title mb-4">Gửi yêu cầu tư vấn</h2>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" style="font-size:13px;font-weight:600;color:var(--navy);">Họ và tên *</label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}<div class="text-danger" style="font-size:12px;margin-top:4px;">{{ form.full_name.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" style="font-size:13px;font-weight:600;color:var(--navy);">Email *</label>
+                {{ form.email }}
+                {% if form.email.errors %}<div class="text-danger" style="font-size:12px;margin-top:4px;">{{ form.email.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" style="font-size:13px;font-weight:600;color:var(--navy);">Điện thoại</label>
+                {{ form.phone }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" style="font-size:13px;font-weight:600;color:var(--navy);">Công ty</label>
+                {{ form.company }}
+              </div>
+              <div class="col-12">
+                <label class="form-label" style="font-size:13px;font-weight:600;color:var(--navy);">Chủ đề *</label>
+                {{ form.subject }}
+                {% if form.subject.errors %}<div class="text-danger" style="font-size:12px;margin-top:4px;">{{ form.subject.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-12">
+                <label class="form-label" style="font-size:13px;font-weight:600;color:var(--navy);">Nội dung *</label>
+                {{ form.message }}
+                {% if form.message.errors %}<div class="text-danger" style="font-size:12px;margin-top:4px;">{{ form.message.errors.0 }}</div>{% endif %}
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn-primary-custom" style="padding:12px 36px;font-size:15px;">
+                  <i class="fas fa-paper-plane me-2"></i>Gửi yêu cầu
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

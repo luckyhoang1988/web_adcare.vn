@@ -1,0 +1,46 @@
+from django.contrib import admin
+from django.utils.html import mark_safe
+from .models import NewsCategory, Article
+
+
+@admin.register(NewsCategory)
+class NewsCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'order', 'is_active')
+    list_editable = ('order', 'is_active')
+    list_display_links = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'category', 'author', 'status', 'is_featured', 'published_at', 'preview_image')
+    list_editable = ('status', 'is_featured')
+    list_display_links = ('title',)
+    list_filter = ('category', 'status', 'is_featured')
+    search_fields = ('title', 'summary', 'content')
+    prepopulated_fields = {'slug': ('title',)}
+    date_hierarchy = 'published_at'
+    fieldsets = (
+        ('Nội dung', {
+            'fields': ('category', 'title', 'slug', 'summary', 'content', 'image', 'author')
+        }),
+        ('Xuất bản', {
+            'fields': ('status', 'is_featured', 'published_at')
+        }),
+        ('SEO', {
+            'fields': ('meta_title', 'meta_desc'),
+            'classes': ('collapse',)
+        }),
+    )
+    actions = ['make_published']
+
+    def make_published(self, request, queryset):
+        from django.utils import timezone
+        queryset.update(status='published', published_at=timezone.now())
+    make_published.short_description = 'Đăng các bài đã chọn'
+
+    def preview_image(self, obj):
+        if obj.image:
+            return mark_safe(f'<img src="{obj.image.url}" height="50" style="border-radius:4px"/>')
+        return '-'
+    preview_image.short_description = 'Ảnh'
