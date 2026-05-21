@@ -14,10 +14,10 @@ class HomeView(TemplateView):
         ctx['sliders'] = Slider.objects.filter(is_active=True)
         ctx['stat_items'] = StatItem.objects.filter(is_active=True)
         ctx['about'] = AboutSection.objects.filter(is_active=True).first()
-        ctx['featured_products'] = Product.objects.filter(is_featured=True, is_active=True)[:6]
-        ctx['featured_services'] = Service.objects.filter(is_featured=True, is_active=True)[:6]
+        ctx['featured_products'] = Product.objects.filter(is_featured=True, is_active=True).select_related('category')[:6]
+        ctx['featured_services'] = Service.objects.filter(is_featured=True, is_active=True).select_related('category')[:6]
         ctx['partners'] = Partner.objects.filter(is_active=True)
-        ctx['recent_news'] = Article.objects.filter(status='published')[:3]
+        ctx['recent_news'] = Article.objects.filter(status='published').select_related('category').order_by('-published_at')[:3]
         return ctx
 
 

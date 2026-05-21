@@ -28,6 +28,7 @@ class ArticleAdmin(admin.ModelAdmin):
     list_editable = ('status', 'is_featured')
     list_display_links = ('title',)
     list_filter = ('category', 'status', 'is_featured')
+    list_select_related = ('category',)
     search_fields = ('title', 'summary', 'content')
     prepopulated_fields = {'slug': ('title',)}
     date_hierarchy = 'published_at'

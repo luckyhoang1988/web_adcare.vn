@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
 from .models import Article, NewsCategory
@@ -32,8 +33,7 @@ class ArticleDetailView(DetailView):
 
     def get_object(self):
         article = get_object_or_404(Article, slug=self.kwargs['slug'], status='published')
-        article.view_count += 1
-        article.save(update_fields=['view_count'])
+        Article.objects.filter(pk=article.pk).update(view_count=F('view_count') + 1)
         return article
 
     def get_context_data(self, **kwargs):

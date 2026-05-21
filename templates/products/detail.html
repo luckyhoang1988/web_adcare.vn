@@ -29,7 +29,7 @@
         <div class="d-flex gap-2 mt-3 flex-wrap">
           {% for img in product.images.all %}
           <img src="{{ img.image.url }}" alt="{{ img.alt|default:product.name }}"
-               style="width:80px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid var(--border);">
+               style="width:80px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid var(--border);" loading="lazy">
           {% endfor %}
         </div>
         {% endif %}
@@ -91,7 +91,7 @@
           <div class="card-item">
             <div class="card-img-wrap">
               <a href="{{ rp.get_absolute_url }}">
-                <img src="{{ rp.image.url }}" alt="{{ rp.name }}" style="height:160px;">
+                <img src="{{ rp.image.url }}" alt="{{ rp.name }}" style="height:160px;" loading="lazy">
               </a>
             </div>
             <div class="card-body">

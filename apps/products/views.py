@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
 from .models import Product, ProductCategory
@@ -41,14 +42,12 @@ class ProductDetailView(DetailView):
 
     def get_object(self):
         product = get_object_or_404(Product, slug=self.kwargs['slug'], is_active=True)
-        product.view_count += 1
-        product.save(update_fields=['view_count'])
+        Product.objects.filter(pk=product.pk).update(view_count=F('view_count') + 1)
         return product
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        product = self.get_object()
         ctx['related_products'] = Product.objects.filter(
-            category=product.category, is_active=True
-        ).exclude(pk=product.pk)[:4]
+            category=self.object.category, is_active=True
+        ).exclude(pk=self.object.pk)[:4]
         return ctx

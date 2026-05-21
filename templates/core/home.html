@@ -99,7 +99,7 @@
     <div class="row align-items-center g-5">
       <div class="col-lg-6">
         <img src="{{ about.image.url }}" alt="{{ about.image_alt|default:about.title }}"
-             class="img-fluid rounded-3 shadow" style="width:100%;object-fit:cover;max-height:420px;">
+             class="img-fluid rounded-3 shadow" style="width:100%;object-fit:cover;max-height:420px;" loading="lazy">
       </div>
       <div class="col-lg-6">
         {% if about.subtitle %}<p class="text-accent fw-600 mb-2" style="font-size:13px;letter-spacing:1px;text-transform:uppercase;">{{ about.subtitle }}</p>{% endif %}
@@ -147,7 +147,7 @@
         <div class="card-item">
           <div class="card-img-wrap">
             <a href="{{ product.get_absolute_url }}">
-              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
             </a>
           </div>
           <div class="card-body">
@@ -188,7 +188,7 @@
              onmouseout="this.style.background='rgba(255,255,255,0.05)'">
           {% if service.image %}
           <img src="{{ service.image.url }}" alt="{{ service.name }}"
-               style="width:100%;height:200px;object-fit:cover;opacity:0.8;">
+               style="width:100%;height:200px;object-fit:cover;opacity:0.8;" loading="lazy">
           {% endif %}
           <div style="padding:20px;">
             {% if service.icon %}
@@ -230,7 +230,7 @@
         <div class="card-item">
           <div class="card-img-wrap">
             <a href="{{ article.get_absolute_url }}">
-              <img src="{{ article.image.url }}" alt="{{ article.title }}">
+              <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
             </a>
           </div>
           <div class="card-body">
@@ -270,11 +270,11 @@
         <div class="swiper-slide">
           {% if partner.website %}
           <a href="{{ partner.website }}" target="_blank" class="partner-logo" title="{{ partner.name }}">
-            <img src="{{ partner.logo.url }}" alt="{{ partner.name }}">
+            <img src="{{ partner.logo.url }}" alt="{{ partner.name }}" loading="lazy">
           </a>
           {% else %}
           <div class="partner-logo" title="{{ partner.name }}">
-            <img src="{{ partner.logo.url }}" alt="{{ partner.name }}">
+            <img src="{{ partner.logo.url }}" alt="{{ partner.name }}" loading="lazy">
           </div>
           {% endif %}
         </div>

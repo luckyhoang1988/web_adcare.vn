@@ -6,6 +6,7 @@ from .models import Service, ServiceCategory
 class ServiceListView(ListView):
     template_name = 'services/list.html'
     context_object_name = 'services'
+    paginate_by = 12
 
     def get_queryset(self):
         qs = Service.objects.filter(is_active=True).select_related('category')

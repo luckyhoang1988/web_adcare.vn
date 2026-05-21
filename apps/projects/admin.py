@@ -23,6 +23,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_editable = ('is_featured', 'is_active', 'order')
     list_display_links = ('name',)
     list_filter = ('category', 'is_featured', 'is_active', 'year')
+    list_select_related = ('category',)
     search_fields = ('name', 'client', 'location', 'short_desc')
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ProjectImageInline]
