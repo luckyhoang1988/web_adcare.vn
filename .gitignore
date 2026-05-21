@@ -1,8 +1,10 @@
 .env
 *.pyc
-__pycache__/
+**/__pycache__/
 db.sqlite3
 staticfiles/
 media/
 *.log
 .DS_Store
+planwebadcare.md
+toi_uu_web.md
