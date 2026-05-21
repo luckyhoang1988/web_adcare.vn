@@ -36,6 +36,6 @@ class ServiceDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['other_services'] = Service.objects.filter(is_active=True).exclude(
+        ctx['other_services'] = Service.objects.filter(is_active=True).select_related('category').exclude(
             pk=self.object.pk)[:4]
         return ctx

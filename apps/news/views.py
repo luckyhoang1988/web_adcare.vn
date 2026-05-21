@@ -40,5 +40,5 @@ class ArticleDetailView(DetailView):
         ctx = super().get_context_data(**kwargs)
         ctx['related_articles'] = Article.objects.filter(
             status='published', category=self.object.category
-        ).exclude(pk=self.object.pk)[:3]
+        ).select_related('category').exclude(pk=self.object.pk)[:3]
         return ctx

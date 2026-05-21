@@ -2,6 +2,26 @@
 {% load static %}
 
 {% block title %}{{ product.name }}{% endblock %}
+{% block meta_desc %}{{ product.short_desc }}{% endblock %}
+{% block og_tags %}
+{{ block.super }}
+{% if product.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}">{% endif %}
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% endblock %}
+{% block json_ld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ product.name }}",
+  "description": "{{ product.short_desc|escapejs }}",
+  {% if product.image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}",{% endif %}
+  {% if product.brand %}"brand": {"@type": "Brand", "name": "{{ product.brand|escapejs }}"},{% endif %}
+  {% if product.model_number %}"model": "{{ product.model_number|escapejs }}",{% endif %}
+  "url": "{{ request.build_absolute_uri }}"
+}
+</script>
+{% endblock %}
 
 {% block content %}
 

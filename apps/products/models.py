@@ -53,8 +53,10 @@ class Product(models.Model):
         return self.name
 
     def get_absolute_url(self):
+        if not self.category_id:
+            return reverse('product_list')
         return reverse('product_detail', kwargs={
-            'cat_slug': self.category.slug if self.category else 'uncategorized',
+            'cat_slug': self.category.slug,
             'slug': self.slug
         })
 

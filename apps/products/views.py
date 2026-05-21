@@ -49,5 +49,5 @@ class ProductDetailView(DetailView):
         ctx = super().get_context_data(**kwargs)
         ctx['related_products'] = Product.objects.filter(
             category=self.object.category, is_active=True
-        ).exclude(pk=self.object.pk)[:4]
+        ).select_related('category').exclude(pk=self.object.pk)[:4]
         return ctx

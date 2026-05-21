@@ -112,6 +112,20 @@
       .stats-section { padding: 24px 0; }
     }
   </style>
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "{{ site_config.company_name|default:'ADCARE Việt Nam' }}",
+    "url": "{{ request.scheme }}://{{ request.get_host }}",
+    "logo": "{% if site_config.logo %}{{ request.scheme }}://{{ request.get_host }}{{ site_config.logo.url }}{% endif %}",
+    "contactPoint": {"@type": "ContactPoint", "telephone": "{{ site_config.phone }}", "contactType": "customer service", "areaServed": "VN", "availableLanguage": "Vietnamese"},
+    "address": {"@type": "PostalAddress", "addressCountry": "VN", "addressLocality": "{{ site_config.address }}"}
+  }
+  </script>
+  {% block json_ld %}{% endblock %}
 </head>
 <body>
 

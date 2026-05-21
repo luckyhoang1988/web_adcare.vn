@@ -2,6 +2,25 @@
 {% load static %}
 
 {% block title %}{{ project.name }}{% endblock %}
+{% block meta_desc %}{{ project.short_desc }}{% endblock %}
+{% block og_tags %}
+{{ block.super }}
+{% if project.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ project.image.url }}">{% endif %}
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% endblock %}
+{% block json_ld %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": "{{ project.name|escapejs }}",
+  "description": "{{ project.short_desc|escapejs }}",
+  {% if project.image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ project.image.url }}",{% endif %}
+  "creator": {"@type": "Organization", "name": "{{ site_config.company_name|default:'ADCARE Việt Nam' }}"},
+  "url": "{{ request.build_absolute_uri }}"
+}
+</script>
+{% endblock %}
 
 {% block content %}
 
