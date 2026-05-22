@@ -9,7 +9,6 @@ class ProjectCategoryAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin
     list_display = ('name', 'slug', 'order', 'is_active', 'show_in_menu', 'copy_link')
     list_editable = ('order', 'is_active', 'show_in_menu')
     list_display_links = ('name',)
-    prepopulated_fields = {'slug': ('name',)}
     actions = [make_duplicate_action('danh mục')]
 
 
@@ -27,7 +26,6 @@ class ProjectAdmin(DuplicateMixin, admin.ModelAdmin):
     list_filter = ('category', 'is_featured', 'is_active', 'year')
     list_select_related = ('category',)
     search_fields = ('name', 'client', 'location', 'short_desc')
-    prepopulated_fields = {'slug': ('name',)}
     inlines = [ProjectImageInline]
     actions = [make_duplicate_action('dự án')]
 

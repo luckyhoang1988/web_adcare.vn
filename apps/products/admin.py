@@ -25,7 +25,6 @@ class ProductCategoryAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin
     list_display = ('name', 'slug', 'order', 'is_active', 'show_in_menu', 'copy_link')
     list_editable = ('order', 'is_active', 'show_in_menu')
     list_display_links = ('name',)
-    prepopulated_fields = {'slug': ('name',)}
     actions = [make_duplicate_action('danh mục')]
 
 
@@ -38,7 +37,6 @@ class ProductAdmin(DuplicateMixin, admin.ModelAdmin):
     list_filter = ('category', 'is_featured', 'is_active', 'brand')
     list_select_related = ('category',)
     search_fields = ('name', 'brand', 'model_number', 'short_desc')
-    prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductImageInline]
     actions = [make_duplicate_action('sản phẩm')]
     fieldsets = (
