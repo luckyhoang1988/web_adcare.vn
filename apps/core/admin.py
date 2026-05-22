@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from .models import SiteConfig, Slider, StatItem, AboutSection, AboutFeature, MenuItem
+from .admin_utils import DuplicateMixin, make_duplicate_action
 
 
 class AboutSectionForm(forms.ModelForm):
@@ -71,9 +72,91 @@ class AboutFeatureInline(admin.TabularInline):
 @admin.register(AboutSection)
 class AboutSectionAdmin(admin.ModelAdmin):
     form = AboutSectionForm
-    list_display = ('title', 'is_active', 'updated_at')
+    list_display = ('title', 'page_url_display', 'menu_status', 'is_active', 'preview_link', 'updated_at')
     list_editable = ('is_active',)
+    list_display_links = ('title',)
+    prepopulated_fields = {'slug': ('title',)}
     inlines = [AboutFeatureInline]
+    fieldsets = (
+        ('Nội dung', {
+            'fields': ('title', 'slug', 'subtitle', 'content', 'image', 'image_alt', 'button_text', 'button_url')
+        }),
+        ('Vị trí hiển thị trên Menu', {
+            'fields': ('auto_add_menu', 'menu_parent', 'menu_order'),
+            'description': (
+                'Bật "Tự động thêm vào menu" → khi lưu sẽ tạo mục menu trỏ đến trang này. '
+                'Chọn "Menu cha" nếu muốn hiển thị là menu con (dropdown). '
+                'Để trống = thêm vào menu cấp 1.'
+            )
+        }),
+        ('Cài đặt', {
+            'fields': ('is_active',)
+        }),
+        ('SEO', {
+            'fields': ('meta_title', 'meta_desc'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        if not obj.slug or not obj.auto_add_menu:
+            return
+        from django.core.cache import cache
+        url = obj.get_absolute_url()
+        item, created = MenuItem.objects.get_or_create(
+            url=url,
+            defaults={
+                'title': obj.title,
+                'item_type': 'custom',
+                'parent': obj.menu_parent,
+                'order': obj.menu_order,
+                'is_active': obj.is_active,
+            }
+        )
+        if not created:
+            item.title = obj.title
+            item.parent = obj.menu_parent
+            item.order = obj.menu_order
+            item.is_active = obj.is_active
+            item.save()
+        cache.clear()
+
+    def page_url_display(self, obj):
+        if not obj.slug:
+            return mark_safe('<span style="color:#aaa;font-style:italic;">Chưa có slug</span>')
+        try:
+            url = obj.get_absolute_url()
+            return mark_safe(
+                f'<a href="{url}" target="_blank" style="font-size:11px;color:#17a2b8;">'
+                f'/gioi-thieu/{obj.slug}/</a>'
+            )
+        except Exception:
+            return mark_safe(f'<code style="font-size:11px;color:#dc3545;">{obj.slug} (lỗi URL)</code>')
+    page_url_display.short_description = 'URL trang'
+
+    def menu_status(self, obj):
+        if obj.auto_add_menu:
+            parent = obj.menu_parent.title if obj.menu_parent else 'Menu chính'
+            return mark_safe(
+                f'<span style="color:#28a745;font-size:12px;">'
+                f'<i class="fas fa-check-circle"></i> {parent}</span>'
+            )
+        return mark_safe('<span style="color:#aaa;font-size:12px;">—</span>')
+    menu_status.short_description = 'Vị trí menu'
+
+    def preview_link(self, obj):
+        if not obj.slug:
+            return mark_safe('<span style="color:#ccc;" title="Cần điền slug trước"><i class="fas fa-eye-slash"></i></span>')
+        try:
+            url = obj.get_absolute_url()
+            return mark_safe(
+                f'<a href="{url}" target="_blank" title="Xem trang trước" '
+                f'style="color:#28a745;font-size:16px;"><i class="fas fa-eye"></i></a>'
+            )
+        except Exception:
+            return '-'
+    preview_link.short_description = 'Preview'
 
 
 class MenuSubItemInline(admin.TabularInline):
@@ -86,12 +169,13 @@ class MenuSubItemInline(admin.TabularInline):
 
 
 @admin.register(MenuItem)
-class MenuItemAdmin(admin.ModelAdmin):
-    list_display = ('display_title', 'item_type', 'dropdown_style', 'url', 'order', 'is_active')
+class MenuItemAdmin(DuplicateMixin, admin.ModelAdmin):
+    list_display = ('display_title', 'item_type', 'dropdown_style', 'url', 'order', 'is_active', 'copy_link')
     list_editable = ('order', 'is_active')
     list_display_links = ('display_title',)
     ordering = ('order',)
     inlines = [MenuSubItemInline]
+    actions = [make_duplicate_action('menu')]
     fieldsets = (
         ('Thông tin cơ bản', {
             'fields': ('title', 'item_type', 'url', 'order', 'is_active', 'open_in_new_tab')

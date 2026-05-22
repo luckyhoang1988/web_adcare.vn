@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from .models import NewsCategory, Article
+from apps.core.admin_utils import DuplicateMixin, make_duplicate_action
 
 
 class ArticleAdminForm(forms.ModelForm):
@@ -14,17 +15,18 @@ class ArticleAdminForm(forms.ModelForm):
 
 
 @admin.register(NewsCategory)
-class NewsCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'order', 'is_active')
+class NewsCategoryAdmin(DuplicateMixin, admin.ModelAdmin):
+    list_display = ('name', 'slug', 'order', 'is_active', 'copy_link')
     list_editable = ('order', 'is_active')
     list_display_links = ('name',)
     prepopulated_fields = {'slug': ('name',)}
+    actions = [make_duplicate_action('danh mục')]
 
 
 @admin.register(Article)
-class ArticleAdmin(admin.ModelAdmin):
+class ArticleAdmin(DuplicateMixin, admin.ModelAdmin):
     form = ArticleAdminForm
-    list_display = ('title', 'category', 'author', 'status', 'is_featured', 'published_at', 'preview_image')
+    list_display = ('title', 'category', 'author', 'status', 'is_featured', 'published_at', 'preview_image', 'copy_link')
     list_editable = ('status', 'is_featured')
     list_display_links = ('title',)
     list_filter = ('category', 'status', 'is_featured')
@@ -44,7 +46,7 @@ class ArticleAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
-    actions = ['make_published']
+    actions = ['make_published', make_duplicate_action('bài viết')]
 
     def make_published(self, request, queryset):
         from django.utils import timezone

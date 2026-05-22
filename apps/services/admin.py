@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from .models import ServiceCategory, Service
+from apps.core.admin_utils import DuplicateMixin, make_duplicate_action
 
 
 class ServiceAdminForm(forms.ModelForm):
@@ -14,23 +15,25 @@ class ServiceAdminForm(forms.ModelForm):
 
 
 @admin.register(ServiceCategory)
-class ServiceCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'order', 'is_active')
+class ServiceCategoryAdmin(DuplicateMixin, admin.ModelAdmin):
+    list_display = ('name', 'slug', 'order', 'is_active', 'copy_link')
     list_editable = ('order', 'is_active')
     list_display_links = ('name',)
     prepopulated_fields = {'slug': ('name',)}
+    actions = [make_duplicate_action('danh mục')]
 
 
 @admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
+class ServiceAdmin(DuplicateMixin, admin.ModelAdmin):
     form = ServiceAdminForm
-    list_display = ('name', 'category', 'is_featured', 'is_active', 'order', 'preview_image')
+    list_display = ('name', 'category', 'is_featured', 'is_active', 'order', 'preview_image', 'copy_link')
     list_editable = ('is_featured', 'is_active', 'order')
     list_display_links = ('name',)
     list_filter = ('category', 'is_featured', 'is_active')
     list_select_related = ('category',)
     search_fields = ('name', 'short_desc')
     prepopulated_fields = {'slug': ('name',)}
+    actions = [make_duplicate_action('dịch vụ')]
 
     def preview_image(self, obj):
         if obj.image:

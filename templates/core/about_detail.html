@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ about.meta_title|default:about.title }}{% endblock %}
+
+{% block meta_desc %}{{ about.meta_desc|default:about.title }}{% endblock %}
+
+{% block og_tags %}
+{{ block.super }}
+{% if about.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ about.image.url }}">{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header text-center">
+  <div class="container">
+    <h1>{{ about.title }}</h1>
+    {% if about.subtitle %}<p>{{ about.subtitle }}</p>{% endif %}
+  </div>
+</div>
+
+{% include 'components/breadcrumb.html' with breadcrumbs=breadcrumbs %}
+
+<section class="section-pad">
+  <div class="container">
+    <div class="row align-items-center g-5 mb-5">
+      {% if about.image %}
+      <div class="col-lg-6">
+        <picture>
+          <source media="(max-width: 575px)" srcset="{{ about.image_mobile.url }}">
+          <img src="{{ about.image.url }}" alt="{{ about.image_alt|default:about.title }}"
+               class="img-fluid rounded-3 shadow" style="width:100%;object-fit:cover;max-height:440px;">
+        </picture>
+      </div>
+      {% endif %}
+      <div class="col-lg-{% if about.image %}6{% else %}12{% endif %}">
+        <div class="mt-3" style="color:var(--text-muted);line-height:1.9;">{{ about.content|safe }}</div>
+        {% with features=about.features.all %}
+        {% if features %}
+        <div class="row g-3 mt-3">
+          {% for f in features %}
+          <div class="col-12 col-sm-6">
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--light);border-radius:var(--radius);border-left:3px solid var(--accent);">
+              <i class="{{ f.icon }}" style="color:var(--accent);font-size:17px;flex-shrink:0;margin-top:2px;"></i>
+              <span style="font-size:14px;color:var(--text);font-weight:500;">{{ f.text }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+
+    {% if stat_items %}
+    <div class="row g-4 mt-4">
+      {% for stat in stat_items %}
+      <div class="col-6 col-md-3">
+        <div style="text-align:center;padding:30px 20px;background:var(--navy);border-radius:var(--radius-lg);">
+          <div style="font-size:28px;color:var(--accent);margin-bottom:8px;"><i class="{{ stat.icon }}"></i></div>
+          <div style="font-size:32px;font-weight:800;color:#fff;">{{ stat.number }}</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.7);">{{ stat.label }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}

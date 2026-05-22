@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from .models import ProductCategory, Product, ProductImage
+from apps.core.admin_utils import DuplicateMixin, make_duplicate_action
 
 
 class ProductAdminForm(forms.ModelForm):
@@ -20,17 +21,18 @@ class ProductImageInline(admin.TabularInline):
 
 
 @admin.register(ProductCategory)
-class ProductCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'order', 'is_active')
+class ProductCategoryAdmin(DuplicateMixin, admin.ModelAdmin):
+    list_display = ('name', 'slug', 'order', 'is_active', 'copy_link')
     list_editable = ('order', 'is_active')
     list_display_links = ('name',)
     prepopulated_fields = {'slug': ('name',)}
+    actions = [make_duplicate_action('danh mục')]
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(DuplicateMixin, admin.ModelAdmin):
     form = ProductAdminForm
-    list_display = ('name', 'category', 'brand', 'is_featured', 'is_active', 'order', 'preview_image')
+    list_display = ('name', 'category', 'brand', 'is_featured', 'is_active', 'order', 'preview_image', 'copy_link')
     list_editable = ('is_featured', 'is_active', 'order')
     list_display_links = ('name',)
     list_filter = ('category', 'is_featured', 'is_active', 'brand')
@@ -38,6 +40,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ('name', 'brand', 'model_number', 'short_desc')
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductImageInline]
+    actions = [make_duplicate_action('sản phẩm')]
     fieldsets = (
         ('Thông tin cơ bản', {
             'fields': ('category', 'name', 'slug', 'brand', 'model_number', 'image')
