@@ -41,6 +41,9 @@
       </div>
       {% endfor %}
     </div>
+
+    {% include 'components/pagination.html' %}
+
     {% else %}
     <div class="text-center py-5" style="color:var(--text-muted);">
       <i class="fas fa-tools" style="font-size:48px;margin-bottom:16px;color:var(--border);"></i>

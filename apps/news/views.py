@@ -24,6 +24,8 @@ class ArticleListView(ListView):
         ctx['categories'] = NewsCategory.objects.filter(is_active=True)
         ctx['current_category'] = getattr(self, 'current_category', None)
         ctx['page_title'] = 'Tin tức'
+        cat_slug = self.request.GET.get('danh-muc')
+        ctx['pagination_base_url'] = f'?danh-muc={cat_slug}&' if cat_slug else '?'
         return ctx
 
 

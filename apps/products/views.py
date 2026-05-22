@@ -7,7 +7,7 @@ from .models import Product, ProductCategory
 class ProductListView(ListView):
     template_name = 'products/list.html'
     context_object_name = 'products'
-    paginate_by = 12
+    paginate_by = 9
 
     def get_queryset(self):
         return Product.objects.filter(is_active=True).select_related('category')
@@ -16,13 +16,14 @@ class ProductListView(ListView):
         ctx = super().get_context_data(**kwargs)
         ctx['categories'] = ProductCategory.objects.filter(is_active=True)
         ctx['page_title'] = 'Sản phẩm'
+        ctx['pagination_base_url'] = '?'
         return ctx
 
 
 class ProductCategoryView(ListView):
     template_name = 'products/list.html'
     context_object_name = 'products'
-    paginate_by = 12
+    paginate_by = 9
 
     def get_queryset(self):
         self.category = get_object_or_404(ProductCategory, slug=self.kwargs['cat_slug'], is_active=True)
@@ -33,6 +34,7 @@ class ProductCategoryView(ListView):
         ctx['categories'] = ProductCategory.objects.filter(is_active=True)
         ctx['current_category'] = self.category
         ctx['page_title'] = self.category.name
+        ctx['pagination_base_url'] = '?'
         return ctx
 
 

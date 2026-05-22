@@ -22,8 +22,10 @@ class ProjectListView(ListView):
         slug = self.request.GET.get('danh-muc')
         if slug:
             ctx['current_category'] = get_object_or_404(ProjectCategory, slug=slug, is_active=True)
+            ctx['pagination_base_url'] = f'?danh-muc={slug}&'
         else:
             ctx['current_category'] = None
+            ctx['pagination_base_url'] = '?'
         return ctx
 
 

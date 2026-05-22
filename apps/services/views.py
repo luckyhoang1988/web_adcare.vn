@@ -6,7 +6,7 @@ from .models import Service, ServiceCategory
 class ServiceListView(ListView):
     template_name = 'services/list.html'
     context_object_name = 'services'
-    paginate_by = 12
+    paginate_by = 9
 
     def get_queryset(self):
         qs = Service.objects.filter(is_active=True).select_related('category')
@@ -22,8 +22,10 @@ class ServiceListView(ListView):
         slug = self.request.GET.get('danh-muc')
         if slug:
             ctx['current_category'] = get_object_or_404(ServiceCategory, slug=slug, is_active=True)
+            ctx['pagination_base_url'] = f'?danh-muc={slug}&'
         else:
             ctx['current_category'] = None
+            ctx['pagination_base_url'] = '?'
         return ctx
 
 
