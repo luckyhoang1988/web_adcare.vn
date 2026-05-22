@@ -48,21 +48,12 @@
 
         {% if nav_menu %}
           {% for item in nav_menu %}
+            {% with children=item.children.all %}
 
-            {% if item.item_type == 'home' %}
-            <li class="nav-item{% if path == '/' %} active{% endif %}">
-              <a class="nav-link" href="{% url 'home' %}"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.title }}</a>
-            </li>
-
-            {% elif item.item_type == 'about' %}
-            <li class="nav-item{% if '/ve-chung-toi/' in path %} active{% endif %}">
-              <a class="nav-link" href="{% url 'about' %}"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.title }}</a>
-            </li>
-
-            {% elif item.item_type == 'products' %}
+            {# ===== Menu có sản phẩm built-in ===== #}
+            {% if item.item_type == 'products' %}
             <li class="nav-item dropdown{% if '/san-pham/' in path %} active{% endif %}">
-              <a class="nav-link dropdown-toggle" href="{% url 'product_list' %}"
-                 data-bs-toggle="dropdown">{{ item.title }}</a>
+              <a class="nav-link dropdown-toggle" href="{% url 'product_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'product_list' %}">Tất cả sản phẩm</a></li>
                 {% if nav_categories %}
@@ -79,10 +70,10 @@
               </ul>
             </li>
 
+            {# ===== Menu có dịch vụ built-in ===== #}
             {% elif item.item_type == 'services' %}
             <li class="nav-item dropdown{% if '/dich-vu/' in path %} active{% endif %}">
-              <a class="nav-link dropdown-toggle" href="{% url 'service_list' %}"
-                 data-bs-toggle="dropdown">{{ item.title }}</a>
+              <a class="nav-link dropdown-toggle" href="{% url 'service_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{% url 'service_list' %}">Tất cả dịch vụ</a></li>
                 {% if nav_service_categories %}
@@ -99,37 +90,91 @@
               </ul>
             </li>
 
+            {# ===== Menu có children → dropdown theo kiểu đã chọn ===== #}
+            {% elif children %}
+            <li class="nav-item dropdown">
+              {% if item.item_type == 'home' %}<a class="nav-link dropdown-toggle{% if path == '/' %} active{% endif %}" href="{% url 'home' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
+              {% elif item.item_type == 'about' %}<a class="nav-link dropdown-toggle{% if '/ve-chung-toi/' in path %} active{% endif %}" href="{% url 'about' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
+              {% elif item.item_type == 'projects' %}<a class="nav-link dropdown-toggle{% if '/du-an/' in path %} active{% endif %}" href="{% url 'project_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
+              {% elif item.item_type == 'news' %}<a class="nav-link dropdown-toggle{% if '/tin-tuc/' in path %} active{% endif %}" href="{% url 'news_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
+              {% elif item.item_type == 'contact' %}<a class="nav-link dropdown-toggle{% if '/lien-he/' in path %} active{% endif %}" href="{% url 'contact' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
+              {% else %}<a class="nav-link dropdown-toggle" href="{{ item.url|default:'#' }}" data-bs-toggle="dropdown"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.title }}</a>
+              {% endif %}
+
+              {# -- Kiểu 1: Danh sách đơn giản -- #}
+              {% if item.dropdown_style == 'list' %}
+              <ul class="dropdown-menu">
+                {% for child in children %}
+                <li>
+                  <a class="dropdown-item" href="{{ child.url }}"{% if child.open_in_new_tab %} target="_blank"{% endif %}>
+                    {% if child.icon %}<i class="{{ child.icon }} me-2" style="width:16px;text-align:center;color:var(--accent);"></i>{% endif %}
+                    {{ child.title }}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+
+              {# -- Kiểu 2: Lưới 2 cột có icon -- #}
+              {% elif item.dropdown_style == 'grid' %}
+              <div class="dropdown-menu dropdown-grid">
+                {% for child in children %}
+                <a class="dropdown-grid-item" href="{{ child.url }}"{% if child.open_in_new_tab %} target="_blank"{% endif %}>
+                  {% if child.icon %}<i class="{{ child.icon }}"></i>{% endif %}
+                  <span>{{ child.title }}</span>
+                </a>
+                {% endfor %}
+              </div>
+
+              {# -- Kiểu 3: Mega menu có mô tả -- #}
+              {% elif item.dropdown_style == 'mega' %}
+              <div class="dropdown-menu dropdown-mega">
+                {% for child in children %}
+                <a class="dropdown-mega-item" href="{{ child.url }}"{% if child.open_in_new_tab %} target="_blank"{% endif %}>
+                  {% if child.icon %}<i class="{{ child.icon }}"></i>{% endif %}
+                  <div>
+                    <strong>{{ child.title }}</strong>
+                    {% if child.description %}<small>{{ child.description }}</small>{% endif %}
+                  </div>
+                </a>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </li>
+
+            {# ===== Menu đơn giản (không có children) ===== #}
+            {% elif item.item_type == 'home' %}
+            <li class="nav-item{% if path == '/' %} active{% endif %}">
+              <a class="nav-link" href="{% url 'home' %}">{{ item.title }}</a>
+            </li>
+            {% elif item.item_type == 'about' %}
+            <li class="nav-item{% if '/ve-chung-toi/' in path %} active{% endif %}">
+              <a class="nav-link" href="{% url 'about' %}">{{ item.title }}</a>
+            </li>
             {% elif item.item_type == 'projects' %}
             <li class="nav-item{% if '/du-an/' in path %} active{% endif %}">
-              <a class="nav-link" href="{% url 'project_list' %}"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.title }}</a>
+              <a class="nav-link" href="{% url 'project_list' %}">{{ item.title }}</a>
             </li>
-
             {% elif item.item_type == 'news' %}
             <li class="nav-item{% if '/tin-tuc/' in path %} active{% endif %}">
-              <a class="nav-link" href="{% url 'news_list' %}"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.title }}</a>
+              <a class="nav-link" href="{% url 'news_list' %}">{{ item.title }}</a>
             </li>
-
             {% elif item.item_type == 'contact' %}
             <li class="nav-item{% if '/lien-he/' in path %} active{% endif %}">
-              <a class="nav-link" href="{% url 'contact' %}"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.title }}</a>
+              <a class="nav-link" href="{% url 'contact' %}">{{ item.title }}</a>
             </li>
-
             {% elif item.item_type == 'custom' and item.url %}
             <li class="nav-item{% if item.url in path %} active{% endif %}">
               <a class="nav-link" href="{{ item.url }}"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.title }}</a>
             </li>
-
             {% endif %}
+
+            {% endwith %}
           {% endfor %}
 
         {% else %}
           {# Fallback nếu chưa có MenuItem nào trong DB #}
-          <li class="nav-item{% if path == '/' %} active{% endif %}">
-            <a class="nav-link" href="{% url 'home' %}">Trang chủ</a>
-          </li>
-          <li class="nav-item{% if '/ve-chung-toi/' in path %} active{% endif %}">
-            <a class="nav-link" href="{% url 'about' %}">Về chúng tôi</a>
-          </li>
+          <li class="nav-item{% if path == '/' %} active{% endif %}"><a class="nav-link" href="{% url 'home' %}">Trang chủ</a></li>
+          <li class="nav-item{% if '/ve-chung-toi/' in path %} active{% endif %}"><a class="nav-link" href="{% url 'about' %}">Về chúng tôi</a></li>
           <li class="nav-item dropdown{% if '/san-pham/' in path %} active{% endif %}">
             <a class="nav-link dropdown-toggle" href="{% url 'product_list' %}" data-bs-toggle="dropdown">Sản phẩm</a>
             <ul class="dropdown-menu">
@@ -137,18 +182,10 @@
               {% for cat in nav_categories %}<li><a class="dropdown-item" href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>{% endfor %}
             </ul>
           </li>
-          <li class="nav-item{% if '/dich-vu/' in path %} active{% endif %}">
-            <a class="nav-link" href="{% url 'service_list' %}">Dịch vụ</a>
-          </li>
-          <li class="nav-item{% if '/du-an/' in path %} active{% endif %}">
-            <a class="nav-link" href="{% url 'project_list' %}">Dự án</a>
-          </li>
-          <li class="nav-item{% if '/tin-tuc/' in path %} active{% endif %}">
-            <a class="nav-link" href="{% url 'news_list' %}">Tin tức</a>
-          </li>
-          <li class="nav-item{% if '/lien-he/' in path %} active{% endif %}">
-            <a class="nav-link" href="{% url 'contact' %}">Liên hệ</a>
-          </li>
+          <li class="nav-item{% if '/dich-vu/' in path %} active{% endif %}"><a class="nav-link" href="{% url 'service_list' %}">Dịch vụ</a></li>
+          <li class="nav-item{% if '/du-an/' in path %} active{% endif %}"><a class="nav-link" href="{% url 'project_list' %}">Dự án</a></li>
+          <li class="nav-item{% if '/tin-tuc/' in path %} active{% endif %}"><a class="nav-link" href="{% url 'news_list' %}">Tin tức</a></li>
+          <li class="nav-item{% if '/lien-he/' in path %} active{% endif %}"><a class="nav-link" href="{% url 'contact' %}">Liên hệ</a></li>
         {% endif %}
 
       </ul>

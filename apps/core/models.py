@@ -121,10 +121,25 @@ class MenuItem(models.Model):
         ('contact', 'Liên hệ'),
         ('custom', 'Link tùy chỉnh'),
     ]
+    DROPDOWN_STYLES = [
+        ('list', 'Danh sách đơn giản'),
+        ('grid', 'Lưới 2 cột (có icon)'),
+        ('mega', 'Mega menu (có mô tả)'),
+    ]
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE,
+                               related_name='children', verbose_name='Menu cha',
+                               help_text='Để trống = menu cấp 1. Chọn menu cha = menu con (dropdown).')
     title = models.CharField('Tên hiển thị', max_length=100)
-    item_type = models.CharField('Loại', max_length=20, choices=ITEM_TYPES, default='custom')
+    item_type = models.CharField('Loại trang', max_length=20, choices=ITEM_TYPES, default='custom')
     url = models.CharField('URL', max_length=200, blank=True,
-                           help_text='Chỉ dùng cho loại "Link tùy chỉnh". VD: /gioi-thieu/')
+                           help_text='Bắt buộc với loại "Link tùy chỉnh". VD: /gioi-thieu/')
+    icon = models.CharField('Icon (FontAwesome)', max_length=60, blank=True,
+                            help_text='VD: fas fa-camera. Dùng cho kiểu dropdown Lưới/Mega.')
+    description = models.CharField('Mô tả ngắn', max_length=200, blank=True,
+                                   help_text='Dùng cho kiểu dropdown Mega menu.')
+    dropdown_style = models.CharField('Kiểu dropdown', max_length=10, choices=DROPDOWN_STYLES,
+                                      default='list',
+                                      help_text='Chỉ áp dụng khi menu cấp 1 có menu con.')
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
     is_active = models.BooleanField('Hiển thị', default=True)
     open_in_new_tab = models.BooleanField('Mở tab mới', default=False)
@@ -135,6 +150,8 @@ class MenuItem(models.Model):
         verbose_name_plural = 'Menu chính'
 
     def __str__(self):
+        if self.parent:
+            return f'↳ {self.title}'
         return self.title
 
 

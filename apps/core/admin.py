@@ -76,9 +76,35 @@ class AboutSectionAdmin(admin.ModelAdmin):
     inlines = [AboutFeatureInline]
 
 
+class MenuSubItemInline(admin.TabularInline):
+    model = MenuItem
+    fk_name = 'parent'
+    extra = 2
+    fields = ('title', 'url', 'icon', 'description', 'order', 'is_active', 'open_in_new_tab')
+    verbose_name = 'Menu con'
+    verbose_name_plural = 'Danh sách menu con (dropdown)'
+
+
 @admin.register(MenuItem)
 class MenuItemAdmin(admin.ModelAdmin):
-    list_display = ('title', 'item_type', 'url', 'order', 'is_active', 'open_in_new_tab')
+    list_display = ('display_title', 'item_type', 'dropdown_style', 'url', 'order', 'is_active')
     list_editable = ('order', 'is_active')
-    list_display_links = ('title',)
+    list_display_links = ('display_title',)
     ordering = ('order',)
+    inlines = [MenuSubItemInline]
+    fieldsets = (
+        ('Thông tin cơ bản', {
+            'fields': ('title', 'item_type', 'url', 'order', 'is_active', 'open_in_new_tab')
+        }),
+        ('Kiểu dropdown (khi có menu con)', {
+            'fields': ('dropdown_style', 'icon', 'description'),
+            'description': 'Cấu hình giao diện dropdown. Thêm menu con bên dưới.'
+        }),
+    )
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(parent=None)
+
+    def display_title(self, obj):
+        return obj.title
+    display_title.short_description = 'Tên menu'
