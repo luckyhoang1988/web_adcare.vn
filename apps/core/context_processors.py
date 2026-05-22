@@ -1,6 +1,6 @@
 from django.core.cache import cache
 from django.db.models import Prefetch
-from .models import SiteConfig, MenuItem
+from .models import SiteConfig, MenuItem, AboutSection
 from apps.products.models import ProductCategory
 from apps.services.models import ServiceCategory, Service
 
@@ -16,6 +16,7 @@ def site_config(request):
                 .prefetch_related(Prefetch('children', queryset=children_qs))
                 .order_by('order')
             ),
+            'nav_about_sections': list(AboutSection.objects.filter(is_active=True).order_by('menu_order')),
             'nav_categories': list(ProductCategory.objects.filter(is_active=True).order_by('order')),
             'nav_service_categories': list(ServiceCategory.objects.filter(is_active=True).order_by('order')),
             'footer_services': list(Service.objects.filter(is_active=True).order_by('order')[:6]),

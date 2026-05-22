@@ -90,6 +90,25 @@
               </ul>
             </li>
 
+            {# ===== Menu về chúng tôi với built-in dropdown sections ===== #}
+            {% elif item.item_type == 'about' %}
+            <li class="nav-item dropdown{% if '/ve-chung-toi/' in path or '/gioi-thieu/' in path %} active{% endif %}">
+              <a class="nav-link dropdown-toggle" href="{% url 'about' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item{% if path == '/ve-chung-toi/' %} active{% endif %}" href="{% url 'about' %}">Giới thiệu chung</a></li>
+                {% if nav_about_sections %}
+                <li><hr class="dropdown-divider" style="border-color:rgba(255,255,255,0.1);margin:4px 0;"></li>
+                {% for section in nav_about_sections %}
+                <li>
+                  <a class="dropdown-item{% if section.slug in path %} active{% endif %}" href="{{ section.get_absolute_url }}">
+                    {{ section.title }}
+                  </a>
+                </li>
+                {% endfor %}
+                {% endif %}
+              </ul>
+            </li>
+
             {# ===== Menu có children → dropdown theo kiểu đã chọn ===== #}
             {% elif children %}
             <li class="nav-item dropdown">
