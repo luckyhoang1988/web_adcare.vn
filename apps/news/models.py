@@ -4,11 +4,12 @@ from django.utils import timezone
 from django_resized import ResizedImageField
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
+from apps.core.models import vi_slugify
 
 
 class NewsCategory(models.Model):
     name = models.CharField('Tên danh mục', max_length=200)
-    slug = models.SlugField('Slug', unique=True)
+    slug = models.SlugField('Slug', unique=True, blank=True)
     description = models.TextField('Mô tả', blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
     is_active = models.BooleanField('Hiển thị', default=True)
@@ -19,6 +20,15 @@ class NewsCategory(models.Model):
         ordering = ['order']
         verbose_name = 'Danh mục tin tức'
         verbose_name_plural = 'Danh mục tin tức'
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            base = vi_slugify(self.name)
+            slug = base; i = 2
+            while NewsCategory.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f'{base}-{i}'; i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -32,7 +42,7 @@ class Article(models.Model):
     category = models.ForeignKey(NewsCategory, on_delete=models.SET_NULL,
                                   null=True, blank=True, related_name='articles', verbose_name='Danh mục')
     title = models.CharField('Tiêu đề', max_length=300)
-    slug = models.SlugField('Slug', unique=True)
+    slug = models.SlugField('Slug', unique=True, blank=True)
     summary = models.TextField('Tóm tắt', max_length=500, blank=True)
     content = models.TextField('Nội dung')
     image = ResizedImageField('Ảnh đại diện', size=[1200, 630], upload_to='news/', quality=85)
@@ -54,6 +64,15 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.title:
+            base = vi_slugify(self.title)
+            slug = base; i = 2
+            while Article.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f'{base}-{i}'; i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('news_detail', kwargs={'slug': self.slug})

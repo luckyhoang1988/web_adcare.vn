@@ -3,11 +3,12 @@ from django.urls import reverse
 from django_resized import ResizedImageField
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
+from apps.core.models import vi_slugify
 
 
 class ProjectCategory(models.Model):
     name = models.CharField('Tên danh mục', max_length=200)
-    slug = models.SlugField('Slug', unique=True)
+    slug = models.SlugField('Slug', unique=True, blank=True)
     icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
     is_active = models.BooleanField('Hiển thị', default=True)
@@ -22,6 +23,15 @@ class ProjectCategory(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            base = vi_slugify(self.name)
+            slug = base; i = 2
+            while ProjectCategory.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f'{base}-{i}'; i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
         return reverse('project_list') + f'?danh-muc={self.slug}'
 
@@ -32,7 +42,7 @@ class Project(models.Model):
         null=True, blank=True, related_name='projects', verbose_name='Danh mục'
     )
     name = models.CharField('Tên dự án', max_length=300)
-    slug = models.SlugField('Slug', unique=True)
+    slug = models.SlugField('Slug', unique=True, blank=True)
     short_desc = models.TextField('Mô tả ngắn', max_length=500, blank=True)
     description = models.TextField('Mô tả chi tiết', blank=True)
     image = ResizedImageField('Ảnh đại diện', size=[900, 600], upload_to='projects/', quality=85)
@@ -52,6 +62,15 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            base = vi_slugify(self.name)
+            slug = base; i = 2
+            while Project.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f'{base}-{i}'; i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('project_detail', kwargs={'slug': self.slug})

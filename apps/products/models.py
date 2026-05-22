@@ -3,11 +3,12 @@ from django.urls import reverse
 from django_resized import ResizedImageField
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
+from apps.core.models import vi_slugify
 
 
 class ProductCategory(models.Model):
     name = models.CharField('Tên danh mục', max_length=200)
-    slug = models.SlugField('Slug', unique=True)
+    slug = models.SlugField('Slug', unique=True, blank=True)
     description = models.TextField('Mô tả', blank=True)
     image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='products/categories/', blank=True, quality=85)
     image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
@@ -27,6 +28,15 @@ class ProductCategory(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            base = vi_slugify(self.name)
+            slug = base; i = 2
+            while ProductCategory.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f'{base}-{i}'; i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
     def get_absolute_url(self):
         return reverse('product_category', kwargs={'cat_slug': self.slug})
 
@@ -35,7 +45,7 @@ class Product(models.Model):
     category = models.ForeignKey(ProductCategory, on_delete=models.SET_NULL,
                                   null=True, related_name='products', verbose_name='Danh mục')
     name = models.CharField('Tên sản phẩm', max_length=300)
-    slug = models.SlugField('Slug', unique=True)
+    slug = models.SlugField('Slug', unique=True, blank=True)
     short_desc = models.TextField('Mô tả ngắn', max_length=500, blank=True)
     description = models.TextField('Mô tả chi tiết', blank=True)
     image = ResizedImageField('Hình ảnh chính', size=[800, 600], upload_to='products/', quality=85)
@@ -57,6 +67,15 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            base = vi_slugify(self.name)
+            slug = base; i = 2
+            while Product.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f'{base}-{i}'; i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         if not self.category_id:
