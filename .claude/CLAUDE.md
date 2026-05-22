@@ -16,6 +16,9 @@ python manage.py migrate
 python manage.py collectstatic --noinput
 python manage.py createsuperuser
 python manage.py generateimages   # generate mobile image cache (django-imagekit)
+
+# Xóa cache (sau khi sửa menu/config)
+python manage.py shell -c "from django.core.cache import cache; cache.clear()"
 ```
 
 **Local:** `http://localhost:8000` · Admin: `http://localhost:8000/admin` — `admin` / `adcare@2024`
@@ -27,13 +30,56 @@ python manage.py generateimages   # generate mobile image cache (django-imagekit
 ```bash
 su - adcare                              # ← LUÔN chuyển sang user adcare trước
 cd web_adcare.vn
+source venv/bin/activate                 # ← BẮT BUỘC trước mọi lệnh python3
 git pull origin master
+pip install -r requirements.txt          # nếu có package mới
 python3 manage.py migrate                # nếu có migration mới
+python3 manage.py collectstatic --noinput
 python3 manage.py generateimages         # nếu có thay đổi image fields
 sudo systemctl restart adcare.service
 ```
 
-> **Lưu ý VPS:** Dùng `python3` (không phải `python`). Phải kích hoạt venv trước khi chạy lệnh Python: `source venv/bin/activate`
+> **Lưu ý VPS:** Dùng `python3` (không phải `python`). Phải kích hoạt venv trước: `source venv/bin/activate`
+
+### Fix lỗi migration khi có data cũ trong DB (PostgreSQL)
+
+Nếu migration thêm field `unique=True` vào bảng đã có data → lỗi `IntegrityError` hoặc `ProgrammingError`:
+
+```bash
+# Bước 1: Thêm cột thủ công (bỏ qua unique tạm thời)
+python3 manage.py dbshell
+```
+```sql
+ALTER TABLE <tên_bảng> ADD COLUMN IF NOT EXISTS <tên_cột> varchar(200) NOT NULL DEFAULT '';
+\q
+```
+```bash
+# Bước 2: Điền data cho cột mới (ví dụ slug)
+python3 manage.py shell -c "
+from apps.core.models import AboutSection, vi_slugify
+for s in AboutSection.objects.all():
+    base = vi_slugify(s.title)
+    slug = base; i = 2
+    while AboutSection.objects.filter(slug=slug).exclude(pk=s.pk).exists():
+        slug = f'{base}-{i}'; i += 1
+    AboutSection.objects.filter(pk=s.pk).update(slug=slug)
+print('Done')
+"
+
+# Bước 3: Thêm unique constraint
+python3 manage.py dbshell
+```
+```sql
+ALTER TABLE <tên_bảng> ADD CONSTRAINT <tên_constraint> UNIQUE (<tên_cột>);
+\q
+```
+```bash
+# Bước 4: Fake migration (đánh dấu đã apply mà không chạy lại)
+python3 manage.py migrate <app> <số_migration> --fake
+
+# Bước 5: Chạy các migration còn lại
+python3 manage.py migrate
+```
 
 ### Fix quyền media (403 Forbidden trên ảnh)
 
@@ -90,8 +136,48 @@ Quản lý menu navbar từ Admin → **Menu chính**.
 
 Menu con thêm qua inline trong admin. Menu `products`/`services` luôn dùng dropdown danh mục tự động (bỏ qua `dropdown_style`).
 
+### AboutSection — Trang giới thiệu động
+Mỗi section là một trang riêng với URL `/gioi-thieu/<slug>/`.
+
+**Fields quan trọng:**
+- `slug` — tự động tạo từ `title` qua `vi_slugify()` nếu để trống
+- `auto_add_menu` — bật để tự tạo MenuItem trỏ đến trang này khi lưu
+- `menu_parent` — chọn MenuItem cha (để trống = menu cấp 1)
+- `menu_order` — thứ tự trong menu
+- `meta_title`, `meta_desc` — SEO per-page
+- `get_absolute_url()` — trả về `/gioi-thieu/<slug>/`
+
+**Template:** `templates/core/about_detail.html`
+**View:** `AboutDetailView` tại `apps/core/views.py`
+
+**`vi_slugify(text)`** — hàm trong `apps/core/models.py`, chuyển tiếng Việt có dấu thành slug ASCII không dấu. Không cần thư viện ngoài.
+
 ### AboutSection — nội dung soạn thảo bằng CKEditor
 Field `content` dùng CKEditorWidget. Template render bằng `{{ about.content|safe }}` (không dùng `|linebreaks`).
+
+---
+
+## Admin — Tính năng Sao chép (DuplicateMixin)
+
+File: `apps/core/admin_utils.py`
+
+**`DuplicateMixin`** — mixin cho ModelAdmin, thêm:
+- Icon copy (🔵) mỗi row trong list → click mở form Add pre-filled (chưa lưu)
+- Slug tự thêm `-copy`, name/title thêm `(Sao chép)`, `is_active=False`, `status='draft'`
+- File/image fields bị bỏ qua (không thể pre-fill HTML form)
+
+**`make_duplicate_action(label)`** — factory tạo bulk action "Sao chép ... đã chọn" (lưu ngay)
+
+**Áp dụng cho:** `MenuItem` · `ProductCategory` · `Product` · `ServiceCategory` · `Service` · `NewsCategory` · `Article` · `ProjectCategory` · `Project`
+
+```python
+# Cách dùng trong admin
+from apps.core.admin_utils import DuplicateMixin, make_duplicate_action
+
+class MyAdmin(DuplicateMixin, admin.ModelAdmin):
+    list_display = ('name', ..., 'copy_link')
+    actions = [make_duplicate_action('tên loại')]
+```
 
 ---
 
@@ -150,6 +236,7 @@ Kích thước mobile:
 | Product/Service | 800×600 | 480×360 |
 | Article | 1200×630 | 576×302 |
 | Project | 900×600 | 480×320 |
+| AboutSection | 700×500 | 480×343 |
 
 **Template dùng `<picture>` element:**
 ```html
@@ -213,6 +300,7 @@ __pycache__/
 ## Lưu ý quan trọng
 
 - **Migration:** luôn `makemigrations` + `migrate` sau khi sửa model
+- **Migration unique field trên DB có data:** xem phần "Fix lỗi migration" ở trên — không chạy migrate thẳng, phải thêm cột thủ công → điền data → thêm constraint → fake migrate
 - **`is_active`:** hầu hết models có cờ này — query nên filter `is_active=True`
 - **select_related:** dùng `select_related('category')` khi query FK — tránh N+1
 - **prefetch_related:** dùng `prefetch_related('children')` cho MenuItem
@@ -222,3 +310,5 @@ __pycache__/
 - **Thêm app mới:** đăng ký `apps.<tên>` trong `INSTALLED_APPS`, sửa `apps.py` cho đúng `name`
 - **CKEditor content:** render bằng `|safe`, không dùng `|linebreaks`
 - **Jazzmin logout:** render là `<form>` không phải `<a>` — style qua `#logout-form button.dropdown-item`
+- **Cache menu:** tự xóa khi save MenuItem hoặc AboutSection (có auto_add_menu). Xóa tay nếu cần: `cache.clear()`
+- **vi_slugify:** không dùng `allow_unicode=True` — slug phải là ASCII. Dùng `vi_slugify()` từ `apps.core.models`
