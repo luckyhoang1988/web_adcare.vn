@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from .models import NewsCategory, Article
-from apps.core.admin_utils import DuplicateMixin, make_duplicate_action
+from apps.core.admin_utils import ClearMenuCacheMixin, DuplicateMixin, make_duplicate_action
 
 
 class ArticleAdminForm(forms.ModelForm):
@@ -15,7 +15,7 @@ class ArticleAdminForm(forms.ModelForm):
 
 
 @admin.register(NewsCategory)
-class NewsCategoryAdmin(DuplicateMixin, admin.ModelAdmin):
+class NewsCategoryAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin):
     list_display = ('name', 'slug', 'order', 'is_active', 'show_in_menu', 'copy_link')
     list_editable = ('order', 'is_active', 'show_in_menu')
     list_display_links = ('name',)

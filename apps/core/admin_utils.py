@@ -1,8 +1,25 @@
 from django.contrib.admin.utils import unquote
+from django.core.cache import cache
 from django.db.models import FileField
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import path, reverse
 from django.utils.html import mark_safe
+
+
+class ClearMenuCacheMixin:
+    """Tự động xóa cache global_nav sau khi save hoặc delete — dùng cho CategoryAdmin."""
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        cache.delete('global_nav')
+
+    def delete_model(self, request, obj):
+        super().delete_model(request, obj)
+        cache.delete('global_nav')
+
+    def delete_queryset(self, request, queryset):
+        super().delete_queryset(request, queryset)
+        cache.delete('global_nav')
 
 
 class DuplicateMixin:

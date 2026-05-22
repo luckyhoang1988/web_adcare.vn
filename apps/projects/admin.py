@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.utils.html import mark_safe
 from .models import ProjectCategory, Project, ProjectImage
-from apps.core.admin_utils import DuplicateMixin, make_duplicate_action
+from apps.core.admin_utils import ClearMenuCacheMixin, DuplicateMixin, make_duplicate_action
 
 
 @admin.register(ProjectCategory)
-class ProjectCategoryAdmin(DuplicateMixin, admin.ModelAdmin):
+class ProjectCategoryAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin):
     list_display = ('name', 'slug', 'order', 'is_active', 'show_in_menu', 'copy_link')
     list_editable = ('order', 'is_active', 'show_in_menu')
     list_display_links = ('name',)

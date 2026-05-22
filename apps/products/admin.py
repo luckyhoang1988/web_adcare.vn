@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from .models import ProductCategory, Product, ProductImage
-from apps.core.admin_utils import DuplicateMixin, make_duplicate_action
+from apps.core.admin_utils import ClearMenuCacheMixin, DuplicateMixin, make_duplicate_action
 
 
 class ProductAdminForm(forms.ModelForm):
@@ -21,7 +21,7 @@ class ProductImageInline(admin.TabularInline):
 
 
 @admin.register(ProductCategory)
-class ProductCategoryAdmin(DuplicateMixin, admin.ModelAdmin):
+class ProductCategoryAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin):
     list_display = ('name', 'slug', 'order', 'is_active', 'show_in_menu', 'copy_link')
     list_editable = ('order', 'is_active', 'show_in_menu')
     list_display_links = ('name',)
