@@ -97,7 +97,7 @@
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item{% if path == '/ve-chung-toi/' %} active{% endif %}" href="{% url 'about' %}">Giới thiệu chung</a></li>
                 {% if nav_about_sections %}
-                <li><hr class="dropdown-divider" style="border-color:rgba(255,255,255,0.1);margin:4px 0;"></li>
+                <li><hr class="dropdown-divider"></li>
                 {% for section in nav_about_sections %}
                 <li>
                   <a class="dropdown-item{% if section.slug in path %} active{% endif %}" href="{{ section.get_absolute_url }}">
