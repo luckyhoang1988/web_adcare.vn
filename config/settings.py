@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     # Third party
     'django_resized',
+    'imagekit',
     'ckeditor',
     # Local apps
     'apps.core',
@@ -99,6 +100,9 @@ STORAGES = {
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+IMAGEKIT_CACHEFILE_DIR = 'CACHE/images'
+IMAGEKIT_DEFAULT_CACHEFILE_STRATEGY = 'imagekit.cachefiles.strategies.Optimistic'
 
 CACHES = {
     'default': {

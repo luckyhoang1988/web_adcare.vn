@@ -22,7 +22,10 @@
       {% for slide in sliders %}
       <div class="carousel-item {% if forloop.first %}active{% endif %}">
         {% if slide.image %}
-        <img src="{{ slide.image.url }}" alt="{{ slide.title }}" class="d-block w-100">
+        <picture>
+          <source media="(max-width: 575px)" srcset="{{ slide.image_mobile.url }}">
+          <img src="{{ slide.image.url }}" alt="{{ slide.title }}" class="d-block w-100">
+        </picture>
         {% endif %}
         <div class="carousel-caption">
           <span class="hero-tag">ADCARE Việt Nam</span>
@@ -98,8 +101,13 @@
   <div class="container">
     <div class="row align-items-center g-5">
       <div class="col-lg-6">
-        <img src="{{ about.image.url }}" alt="{{ about.image_alt|default:about.title }}"
-             class="img-fluid rounded-3 shadow" style="width:100%;object-fit:cover;max-height:420px;" loading="lazy">
+        {% if about.image %}
+        <picture>
+          <source media="(max-width: 575px)" srcset="{{ about.image_mobile.url }}">
+          <img src="{{ about.image.url }}" alt="{{ about.image_alt|default:about.title }}"
+               class="img-fluid rounded-3 shadow" style="width:100%;object-fit:cover;max-height:420px;" loading="lazy">
+        </picture>
+        {% endif %}
       </div>
       <div class="col-lg-6">
         {% if about.subtitle %}<p class="text-accent fw-600 mb-2" style="font-size:13px;letter-spacing:1px;text-transform:uppercase;">{{ about.subtitle }}</p>{% endif %}
@@ -147,7 +155,10 @@
         <div class="card-item">
           <div class="card-img-wrap">
             <a href="{{ product.get_absolute_url }}">
-              <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+              <picture>
+                <source media="(max-width: 575px)" srcset="{{ product.image_mobile.url }}">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+              </picture>
             </a>
           </div>
           <div class="card-body">
@@ -187,8 +198,11 @@
              onmouseover="this.style.background='rgba(255,255,255,0.1)'"
              onmouseout="this.style.background='rgba(255,255,255,0.05)'">
           {% if service.image %}
-          <img src="{{ service.image.url }}" alt="{{ service.name }}"
-               style="width:100%;height:200px;object-fit:cover;opacity:0.8;" loading="lazy">
+          <picture>
+            <source media="(max-width: 575px)" srcset="{{ service.image_mobile.url }}">
+            <img src="{{ service.image.url }}" alt="{{ service.name }}"
+                 style="width:100%;height:200px;object-fit:cover;opacity:0.8;" loading="lazy">
+          </picture>
           {% endif %}
           <div style="padding:20px;">
             {% if service.icon %}
@@ -230,7 +244,10 @@
         <div class="card-item">
           <div class="card-img-wrap">
             <a href="{{ article.get_absolute_url }}">
-              <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
+              <picture>
+                <source media="(max-width: 575px)" srcset="{{ article.image_mobile.url }}">
+                <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
+              </picture>
             </a>
           </div>
           <div class="card-body">

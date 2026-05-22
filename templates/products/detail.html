@@ -43,8 +43,11 @@
     <div class="row g-5">
       <!-- Image -->
       <div class="col-lg-5">
-        <img src="{{ product.image.url }}" alt="{{ product.name }}"
-             class="img-fluid rounded-3 shadow" style="width:100%;object-fit:cover;">
+        <picture>
+          <source media="(max-width: 575px)" srcset="{{ product.image_mobile.url }}">
+          <img src="{{ product.image.url }}" alt="{{ product.name }}"
+               class="img-fluid rounded-3 shadow" style="width:100%;object-fit:cover;">
+        </picture>
         {% if product.images.exists %}
         <div class="d-flex gap-2 mt-3 flex-wrap">
           {% for img in product.images.all %}
@@ -111,7 +114,10 @@
           <div class="card-item">
             <div class="card-img-wrap">
               <a href="{{ rp.get_absolute_url }}">
-                <img src="{{ rp.image.url }}" alt="{{ rp.name }}" style="height:160px;" loading="lazy">
+                <picture>
+                  <source media="(max-width: 575px)" srcset="{{ rp.image_mobile.url }}">
+                  <img src="{{ rp.image.url }}" alt="{{ rp.name }}" style="height:160px;" loading="lazy">
+                </picture>
               </a>
             </div>
             <div class="card-body">

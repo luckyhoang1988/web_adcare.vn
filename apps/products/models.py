@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from django_resized import ResizedImageField
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
 
 
 class ProductCategory(models.Model):
@@ -8,6 +10,7 @@ class ProductCategory(models.Model):
     slug = models.SlugField('Slug', unique=True, allow_unicode=True)
     description = models.TextField('Mô tả', blank=True)
     image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='products/categories/', blank=True, quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
     icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True,
                             help_text='VD: fas fa-camera, fas fa-shield-alt')
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
@@ -34,6 +37,7 @@ class Product(models.Model):
     short_desc = models.TextField('Mô tả ngắn', max_length=500, blank=True)
     description = models.TextField('Mô tả chi tiết', blank=True)
     image = ResizedImageField('Hình ảnh chính', size=[800, 600], upload_to='products/', quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
     brand = models.CharField('Thương hiệu', max_length=100, blank=True)
     model_number = models.CharField('Model', max_length=100, blank=True)
     specifications = models.TextField('Thông số kỹ thuật', blank=True)
@@ -65,6 +69,7 @@ class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE,
                                  related_name='images', verbose_name='Sản phẩm')
     image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='products/gallery/', quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
     alt = models.CharField('Alt text', max_length=200, blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
 

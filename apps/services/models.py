@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from django_resized import ResizedImageField
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
 
 
 class ServiceCategory(models.Model):
@@ -9,6 +11,7 @@ class ServiceCategory(models.Model):
     description = models.TextField('Mô tả', blank=True)
     icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True)
     image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='services/categories/', blank=True, quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
     is_active = models.BooleanField('Hiển thị', default=True)
 
@@ -29,6 +32,7 @@ class Service(models.Model):
     short_desc = models.TextField('Mô tả ngắn', max_length=500, blank=True)
     description = models.TextField('Mô tả chi tiết', blank=True)
     image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='services/', quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
     icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True)
     is_featured = models.BooleanField('Nổi bật (hiện trang chủ)', default=False)
     is_active = models.BooleanField('Hiển thị', default=True)

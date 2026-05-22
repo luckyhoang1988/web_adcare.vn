@@ -2,6 +2,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django_resized import ResizedImageField
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
 
 
 class NewsCategory(models.Model):
@@ -32,6 +34,7 @@ class Article(models.Model):
     summary = models.TextField('Tóm tắt', max_length=500, blank=True)
     content = models.TextField('Nội dung')
     image = ResizedImageField('Ảnh đại diện', size=[1200, 630], upload_to='news/', quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(576, 302)], format='JPEG', options={'quality': 80})
     author = models.CharField('Tác giả', max_length=100, default='ADCARE Việt Nam')
     status = models.CharField('Trạng thái', max_length=20, choices=STATUS_CHOICES, default='draft')
     is_featured = models.BooleanField('Nổi bật', default=False)

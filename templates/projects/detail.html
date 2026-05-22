@@ -38,8 +38,11 @@
       <!-- Main content -->
       <div class="col-lg-8">
         {% if project.image %}
-        <img src="{{ project.image.url }}" alt="{{ project.name }}"
-             class="img-fluid rounded-3 shadow mb-4" style="width:100%;max-height:480px;object-fit:cover;">
+        <picture>
+          <source media="(max-width: 575px)" srcset="{{ project.image_mobile.url }}">
+          <img src="{{ project.image.url }}" alt="{{ project.name }}"
+               class="img-fluid rounded-3 shadow mb-4" style="width:100%;max-height:480px;object-fit:cover;">
+        </picture>
         {% endif %}
 
         <h2 style="font-size:22px;font-weight:700;color:var(--navy);margin-bottom:16px;">{{ project.name }}</h2>
@@ -85,8 +88,11 @@
           {% for img in gallery %}
           <div class="col-6 col-md-4">
             <a href="{{ img.image.url }}" target="_blank">
-              <img src="{{ img.image.url }}" alt="{{ img.alt|default:project.name }}"
-                   class="img-fluid rounded-3" style="width:100%;height:180px;object-fit:cover;" loading="lazy">
+              <picture>
+                <source media="(max-width: 575px)" srcset="{{ img.image_mobile.url }}">
+                <img src="{{ img.image.url }}" alt="{{ img.alt|default:project.name }}"
+                     class="img-fluid rounded-3" style="width:100%;height:180px;object-fit:cover;" loading="lazy">
+              </picture>
             </a>
           </div>
           {% endfor %}

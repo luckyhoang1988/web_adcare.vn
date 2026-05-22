@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from django_resized import ResizedImageField
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
 
 
 class ProjectCategory(models.Model):
@@ -32,6 +34,7 @@ class Project(models.Model):
     short_desc = models.TextField('Mô tả ngắn', max_length=500, blank=True)
     description = models.TextField('Mô tả chi tiết', blank=True)
     image = ResizedImageField('Ảnh đại diện', size=[900, 600], upload_to='projects/', quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 320)], format='JPEG', options={'quality': 80})
     client = models.CharField('Khách hàng', max_length=200, blank=True)
     location = models.CharField('Địa điểm', max_length=300, blank=True)
     year = models.PositiveSmallIntegerField('Năm thực hiện', null=True, blank=True)
@@ -58,6 +61,7 @@ class ProjectImage(models.Model):
         related_name='images', verbose_name='Dự án'
     )
     image = ResizedImageField('Hình ảnh', size=[1200, 800], upload_to='projects/gallery/', quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(576, 384)], format='JPEG', options={'quality': 80})
     alt = models.CharField('Alt text', max_length=200, blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
 

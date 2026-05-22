@@ -21,7 +21,10 @@
         <div class="card-item">
           <div class="card-img-wrap">
             <a href="{{ service.get_absolute_url }}">
-              <img src="{{ service.image.url }}" alt="{{ service.name }}" loading="lazy">
+              <picture>
+                <source media="(max-width: 575px)" srcset="{{ service.image_mobile.url }}">
+                <img src="{{ service.image.url }}" alt="{{ service.name }}" loading="lazy">
+              </picture>
             </a>
           </div>
           <div class="card-body">

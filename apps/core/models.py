@@ -1,5 +1,7 @@
 from django.db import models
 from django_resized import ResizedImageField
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
 
 
 class SiteConfig(models.Model):
@@ -52,6 +54,7 @@ class Slider(models.Model):
     title = models.CharField('Tiêu đề', max_length=200)
     subtitle = models.TextField('Mô tả', blank=True)
     image = ResizedImageField('Hình ảnh', size=[1920, 800], upload_to='sliders/', quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(576, 400)], format='JPEG', options={'quality': 80})
     button_text = models.CharField('Nút 1 - Text', max_length=50, default='Xem thêm')
     button_url = models.CharField('Nút 1 - URL', max_length=200, default='#')
     button2_text = models.CharField('Nút 2 - Text', max_length=50, blank=True)
@@ -92,6 +95,7 @@ class AboutSection(models.Model):
     subtitle = models.CharField('Tiêu đề phụ', max_length=300, blank=True)
     content = models.TextField('Nội dung')
     image = ResizedImageField('Hình ảnh', size=[700, 500], upload_to='about/', quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 343)], format='JPEG', options={'quality': 80})
     image_alt = models.CharField('Alt text ảnh', max_length=200, blank=True)
     button_text = models.CharField('Nút - Text', max_length=50, default='Xem thêm')
     button_url = models.CharField('Nút - URL', max_length=200, default='/ve-chung-toi/')

@@ -38,7 +38,10 @@
         <div class="card-item">
           <div class="card-img-wrap">
             <a href="{{ project.get_absolute_url }}">
-              <img src="{{ project.image.url }}" alt="{{ project.name }}" loading="lazy">
+              <picture>
+                <source media="(max-width: 575px)" srcset="{{ project.image_mobile.url }}">
+                <img src="{{ project.image.url }}" alt="{{ project.name }}" loading="lazy">
+              </picture>
             </a>
           </div>
           <div class="card-body">

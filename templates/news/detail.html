@@ -48,8 +48,11 @@
           <span class="mx-2">·</span>
           <i class="fas fa-eye me-1"></i>{{ article.view_count }} lượt xem
         </div>
-        <img src="{{ article.image.url }}" alt="{{ article.title }}"
-             class="img-fluid rounded-3 shadow mb-4" style="width:100%;">
+        <picture>
+          <source media="(max-width: 575px)" srcset="{{ article.image_mobile.url }}">
+          <img src="{{ article.image.url }}" alt="{{ article.title }}"
+               class="img-fluid rounded-3 shadow mb-4" style="width:100%;">
+        </picture>
         <div style="color:var(--text);line-height:2;font-size:15px;">
           {{ article.content|linebreaks }}
         </div>
