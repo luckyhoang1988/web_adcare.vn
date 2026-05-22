@@ -15,6 +15,8 @@ class ProductCategory(models.Model):
                             help_text='VD: fas fa-camera, fas fa-shield-alt')
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
     is_active = models.BooleanField('Hiển thị', default=True)
+    show_in_menu = models.BooleanField('Hiển thị trong menu', default=True,
+                                       help_text='Bật để danh mục này xuất hiện trong dropdown menu điều hướng.')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

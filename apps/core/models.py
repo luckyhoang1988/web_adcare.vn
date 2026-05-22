@@ -141,6 +141,10 @@ class AboutSection(models.Model):
                                   help_text='Tiêu đề SEO. Để trống sẽ dùng tiêu đề chính.')
     meta_desc = models.TextField('Meta Description', max_length=300, blank=True)
     is_active = models.BooleanField('Hiển thị', default=True)
+    show_in_menu = models.BooleanField(
+        'Hiển thị trong menu dropdown', default=False,
+        help_text='Bật để section này tự xuất hiện trong dropdown của menu "Về chúng tôi" mà không cần tạo MenuItem.'
+    )
     auto_add_menu = models.BooleanField(
         'Tự động thêm vào menu', default=False,
         help_text='Khi bật, section này sẽ tự động tạo một mục trong menu điều hướng.'

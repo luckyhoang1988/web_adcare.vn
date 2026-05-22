@@ -16,8 +16,8 @@ class ServiceAdminForm(forms.ModelForm):
 
 @admin.register(ServiceCategory)
 class ServiceCategoryAdmin(DuplicateMixin, admin.ModelAdmin):
-    list_display = ('name', 'slug', 'order', 'is_active', 'copy_link')
-    list_editable = ('order', 'is_active')
+    list_display = ('name', 'slug', 'order', 'is_active', 'show_in_menu', 'copy_link')
+    list_editable = ('order', 'is_active', 'show_in_menu')
     list_display_links = ('name',)
     prepopulated_fields = {'slug': ('name',)}
     actions = [make_duplicate_action('danh mục')]

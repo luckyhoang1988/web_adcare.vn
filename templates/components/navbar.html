@@ -90,6 +90,58 @@
               </ul>
             </li>
 
+            {# ===== Menu có giới thiệu built-in ===== #}
+            {% elif item.item_type == 'about' and nav_about_sections %}
+            <li class="nav-item dropdown{% if '/ve-chung-toi/' in path %} active{% endif %}">
+              <a class="nav-link dropdown-toggle" href="{% url 'about' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'about' %}">Giới thiệu chung</a></li>
+                <li><hr class="dropdown-divider" style="border-color:rgba(255,255,255,0.1);margin:4px 0;"></li>
+                {% for section in nav_about_sections %}
+                <li>
+                  <a class="dropdown-item{% if section.slug in path %} active{% endif %}" href="{{ section.get_absolute_url }}">
+                    {{ section.title }}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+
+            {# ===== Menu có dự án built-in ===== #}
+            {% elif item.item_type == 'projects' and nav_project_categories %}
+            <li class="nav-item dropdown{% if '/du-an/' in path %} active{% endif %}">
+              <a class="nav-link dropdown-toggle" href="{% url 'project_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'project_list' %}">Tất cả dự án</a></li>
+                <li><hr class="dropdown-divider" style="border-color:rgba(255,255,255,0.1);margin:4px 0;"></li>
+                {% for cat in nav_project_categories %}
+                <li>
+                  <a class="dropdown-item{% if cat.slug in path %} active{% endif %}" href="{% url 'project_list' %}?danh-muc={{ cat.slug }}">
+                    {% if cat.icon %}<i class="{{ cat.icon }} me-2" style="width:16px;text-align:center;color:var(--accent);"></i>{% endif %}
+                    {{ cat.name }}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+
+            {# ===== Menu có tin tức built-in ===== #}
+            {% elif item.item_type == 'news' and nav_news_categories %}
+            <li class="nav-item dropdown{% if '/tin-tuc/' in path %} active{% endif %}">
+              <a class="nav-link dropdown-toggle" href="{% url 'news_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'news_list' %}">Tất cả tin tức</a></li>
+                <li><hr class="dropdown-divider" style="border-color:rgba(255,255,255,0.1);margin:4px 0;"></li>
+                {% for cat in nav_news_categories %}
+                <li>
+                  <a class="dropdown-item{% if cat.slug in path %} active{% endif %}" href="{% url 'news_list' %}?danh-muc={{ cat.slug }}">
+                    {{ cat.name }}
+                  </a>
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+
             {# ===== Menu có children → dropdown theo kiểu đã chọn ===== #}
             {% elif children %}
             <li class="nav-item dropdown">

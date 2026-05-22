@@ -212,6 +212,7 @@ img { max-width: 100%; height: auto; }
   min-width: 360px;
   padding: 12px;
   gap: 6px;
+  background: var(--navy);
 }
 .dropdown-menu.dropdown-grid.show {
   display: grid;
@@ -247,6 +248,7 @@ img { max-width: 100%; height: auto; }
   min-width: 480px;
   padding: 16px;
   gap: 8px;
+  background: var(--navy);
 }
 .dropdown-menu.dropdown-mega.show {
   display: grid;

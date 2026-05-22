@@ -72,8 +72,8 @@ class AboutFeatureInline(admin.TabularInline):
 @admin.register(AboutSection)
 class AboutSectionAdmin(admin.ModelAdmin):
     form = AboutSectionForm
-    list_display = ('title', 'page_url_display', 'menu_status', 'is_active', 'preview_link', 'updated_at')
-    list_editable = ('is_active',)
+    list_display = ('title', 'page_url_display', 'show_in_menu', 'menu_status', 'is_active', 'preview_link', 'updated_at')
+    list_editable = ('show_in_menu', 'is_active')
     list_display_links = ('title',)
     prepopulated_fields = {'slug': ('title',)}
     inlines = [AboutFeatureInline]
@@ -82,7 +82,7 @@ class AboutSectionAdmin(admin.ModelAdmin):
             'fields': ('title', 'slug', 'subtitle', 'content', 'image', 'image_alt', 'button_text', 'button_url')
         }),
         ('Vị trí hiển thị trên Menu', {
-            'fields': ('auto_add_menu', 'menu_parent', 'menu_order'),
+            'fields': ('show_in_menu', 'auto_add_menu', 'menu_parent', 'menu_order'),
             'description': (
                 'Bật "Tự động thêm vào menu" → khi lưu sẽ tạo mục menu trỏ đến trang này. '
                 'Chọn "Menu cha" nếu muốn hiển thị là menu con (dropdown). '
