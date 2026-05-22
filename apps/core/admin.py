@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
-from .models import SiteConfig, Slider, StatItem, AboutSection, AboutFeature
+from .models import SiteConfig, Slider, StatItem, AboutSection, AboutFeature, MenuItem
 
 
 class AboutSectionForm(forms.ModelForm):
@@ -74,3 +74,11 @@ class AboutSectionAdmin(admin.ModelAdmin):
     list_display = ('title', 'is_active', 'updated_at')
     list_editable = ('is_active',)
     inlines = [AboutFeatureInline]
+
+
+@admin.register(MenuItem)
+class MenuItemAdmin(admin.ModelAdmin):
+    list_display = ('title', 'item_type', 'url', 'order', 'is_active', 'open_in_new_tab')
+    list_editable = ('order', 'is_active')
+    list_display_links = ('title',)
+    ordering = ('order',)

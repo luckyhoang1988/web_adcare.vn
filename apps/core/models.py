@@ -110,6 +110,34 @@ class AboutSection(models.Model):
         return self.title
 
 
+class MenuItem(models.Model):
+    ITEM_TYPES = [
+        ('home', 'Trang chủ'),
+        ('about', 'Về chúng tôi'),
+        ('products', 'Sản phẩm (+ dropdown danh mục)'),
+        ('services', 'Dịch vụ (+ dropdown danh mục)'),
+        ('projects', 'Dự án'),
+        ('news', 'Tin tức'),
+        ('contact', 'Liên hệ'),
+        ('custom', 'Link tùy chỉnh'),
+    ]
+    title = models.CharField('Tên hiển thị', max_length=100)
+    item_type = models.CharField('Loại', max_length=20, choices=ITEM_TYPES, default='custom')
+    url = models.CharField('URL', max_length=200, blank=True,
+                           help_text='Chỉ dùng cho loại "Link tùy chỉnh". VD: /gioi-thieu/')
+    order = models.PositiveSmallIntegerField('Thứ tự', default=0)
+    is_active = models.BooleanField('Hiển thị', default=True)
+    open_in_new_tab = models.BooleanField('Mở tab mới', default=False)
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = 'Menu item'
+        verbose_name_plural = 'Menu chính'
+
+    def __str__(self):
+        return self.title
+
+
 class AboutFeature(models.Model):
     about = models.ForeignKey(AboutSection, on_delete=models.CASCADE,
                               related_name='features', verbose_name='Section')
