@@ -7,7 +7,7 @@ from imagekit.processors import ResizeToFit
 
 class ProjectCategory(models.Model):
     name = models.CharField('Tên danh mục', max_length=200)
-    slug = models.SlugField('Slug', unique=True, allow_unicode=True)
+    slug = models.SlugField('Slug', unique=True)
     icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
     is_active = models.BooleanField('Hiển thị', default=True)
@@ -32,7 +32,7 @@ class Project(models.Model):
         null=True, blank=True, related_name='projects', verbose_name='Danh mục'
     )
     name = models.CharField('Tên dự án', max_length=300)
-    slug = models.SlugField('Slug', unique=True, allow_unicode=True)
+    slug = models.SlugField('Slug', unique=True)
     short_desc = models.TextField('Mô tả ngắn', max_length=500, blank=True)
     description = models.TextField('Mô tả chi tiết', blank=True)
     image = ResizedImageField('Ảnh đại diện', size=[900, 600], upload_to='projects/', quality=85)

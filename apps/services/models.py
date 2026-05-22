@@ -7,7 +7,7 @@ from imagekit.processors import ResizeToFit
 
 class ServiceCategory(models.Model):
     name = models.CharField('Tên danh mục', max_length=200)
-    slug = models.SlugField('Slug', unique=True, allow_unicode=True)
+    slug = models.SlugField('Slug', unique=True)
     description = models.TextField('Mô tả', blank=True)
     icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True)
     image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='services/categories/', blank=True, quality=85)
@@ -30,7 +30,7 @@ class Service(models.Model):
     category = models.ForeignKey(ServiceCategory, on_delete=models.SET_NULL,
                                   null=True, blank=True, related_name='services', verbose_name='Danh mục')
     name = models.CharField('Tên dịch vụ', max_length=300)
-    slug = models.SlugField('Slug', unique=True, allow_unicode=True)
+    slug = models.SlugField('Slug', unique=True)
     short_desc = models.TextField('Mô tả ngắn', max_length=500, blank=True)
     description = models.TextField('Mô tả chi tiết', blank=True)
     image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='services/', quality=85)

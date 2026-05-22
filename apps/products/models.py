@@ -7,7 +7,7 @@ from imagekit.processors import ResizeToFit
 
 class ProductCategory(models.Model):
     name = models.CharField('Tên danh mục', max_length=200)
-    slug = models.SlugField('Slug', unique=True, allow_unicode=True)
+    slug = models.SlugField('Slug', unique=True)
     description = models.TextField('Mô tả', blank=True)
     image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='products/categories/', blank=True, quality=85)
     image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
@@ -35,7 +35,7 @@ class Product(models.Model):
     category = models.ForeignKey(ProductCategory, on_delete=models.SET_NULL,
                                   null=True, related_name='products', verbose_name='Danh mục')
     name = models.CharField('Tên sản phẩm', max_length=300)
-    slug = models.SlugField('Slug', unique=True, allow_unicode=True)
+    slug = models.SlugField('Slug', unique=True)
     short_desc = models.TextField('Mô tả ngắn', max_length=500, blank=True)
     description = models.TextField('Mô tả chi tiết', blank=True)
     image = ResizedImageField('Hình ảnh chính', size=[800, 600], upload_to='products/', quality=85)

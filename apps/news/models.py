@@ -8,7 +8,7 @@ from imagekit.processors import ResizeToFit
 
 class NewsCategory(models.Model):
     name = models.CharField('Tên danh mục', max_length=200)
-    slug = models.SlugField('Slug', unique=True, allow_unicode=True)
+    slug = models.SlugField('Slug', unique=True)
     description = models.TextField('Mô tả', blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
     is_active = models.BooleanField('Hiển thị', default=True)
@@ -32,7 +32,7 @@ class Article(models.Model):
     category = models.ForeignKey(NewsCategory, on_delete=models.SET_NULL,
                                   null=True, blank=True, related_name='articles', verbose_name='Danh mục')
     title = models.CharField('Tiêu đề', max_length=300)
-    slug = models.SlugField('Slug', unique=True, allow_unicode=True)
+    slug = models.SlugField('Slug', unique=True)
     summary = models.TextField('Tóm tắt', max_length=500, blank=True)
     content = models.TextField('Nội dung')
     image = ResizedImageField('Ảnh đại diện', size=[1200, 630], upload_to='news/', quality=85)
