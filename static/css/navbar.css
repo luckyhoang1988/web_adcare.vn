@@ -67,7 +67,7 @@
   min-width: 220px;
 }
 .navbar-nav .dropdown-item {
-  color: var(--text);
+  color: #2d2d2d !important;
   font-size: 13px;
   font-weight: 500;
   padding: 9px 20px;
