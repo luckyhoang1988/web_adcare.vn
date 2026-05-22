@@ -25,7 +25,7 @@
       <div class="col-lg-6">
         {% if about.subtitle %}<p class="text-accent fw-600 mb-2" style="font-size:13px;letter-spacing:1px;text-transform:uppercase;">{{ about.subtitle }}</p>{% endif %}
         <h2 class="section-title">{{ about.title }}</h2>
-        <div class="mt-3" style="color:var(--text-muted);line-height:1.9;">{{ about.content|linebreaks }}</div>
+        <div class="mt-3" style="color:var(--text-muted);line-height:1.9;">{{ about.content|safe }}</div>
         {% with features=about.features.all %}
         {% if features %}
         <div class="row g-3 mt-3">

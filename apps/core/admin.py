@@ -1,6 +1,16 @@
+from django import forms
 from django.contrib import admin
 from django.utils.html import mark_safe
+from ckeditor.widgets import CKEditorWidget
 from .models import SiteConfig, Slider, StatItem, AboutSection, AboutFeature
+
+
+class AboutSectionForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorWidget(), label='Nội dung')
+
+    class Meta:
+        model = AboutSection
+        fields = '__all__'
 
 
 @admin.register(SiteConfig)
@@ -60,6 +70,7 @@ class AboutFeatureInline(admin.TabularInline):
 
 @admin.register(AboutSection)
 class AboutSectionAdmin(admin.ModelAdmin):
+    form = AboutSectionForm
     list_display = ('title', 'is_active', 'updated_at')
     list_editable = ('is_active',)
     inlines = [AboutFeatureInline]
