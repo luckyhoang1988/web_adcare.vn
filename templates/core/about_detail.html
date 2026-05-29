@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block title %}{{ about.meta_title|default:about.title }}{% endblock %}
-
 {% block meta_desc %}{{ about.meta_desc|default:about.title }}{% endblock %}
 
 {% block og_tags %}
@@ -21,28 +20,32 @@
 
 {% include 'components/breadcrumb.html' with breadcrumbs=breadcrumbs %}
 
-<section class="section-pad">
+<!-- ===== INTRO: Ảnh + Điểm nổi bật ===== -->
+<section class="section-pad-sm" style="background:var(--light);">
   <div class="container">
-    <div class="row align-items-center g-5 mb-5">
+    <div class="row align-items-center g-5">
       {% if about.image %}
-      <div class="col-lg-6">
+      <div class="col-lg-5">
         <picture>
           <source media="(max-width: 575px)" srcset="{{ about.image_mobile.url }}">
           <img src="{{ about.image.url }}" alt="{{ about.image_alt|default:about.title }}"
-               class="img-fluid rounded-3 shadow" style="width:100%;object-fit:cover;max-height:440px;">
+               class="img-fluid rounded-3 shadow" style="width:100%;object-fit:cover;">
         </picture>
       </div>
       {% endif %}
-      <div class="col-lg-{% if about.image %}6{% else %}12{% endif %}">
-        <div class="mt-3" style="color:var(--text-muted);line-height:1.9;">{{ about.content|safe }}</div>
+      <div class="col-lg-{% if about.image %}7{% else %}12{% endif %}">
+        {% if about.subtitle %}
+        <p class="text-accent fw-600 mb-2" style="font-size:13px;letter-spacing:1px;text-transform:uppercase;">{{ about.subtitle }}</p>
+        {% endif %}
+        <h2 class="section-title mb-4">{{ about.title }}</h2>
         {% with features=about.features.all %}
         {% if features %}
-        <div class="row g-3 mt-3">
+        <div class="row g-3">
           {% for f in features %}
           <div class="col-12 col-sm-6">
-            <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--light);border-radius:var(--radius);border-left:3px solid var(--accent);">
-              <i class="{{ f.icon }}" style="color:var(--accent);font-size:17px;flex-shrink:0;margin-top:2px;"></i>
-              <span style="font-size:14px;color:var(--text);font-weight:500;">{{ f.text }}</span>
+            <div class="about-feature-item">
+              <i class="{{ f.icon }} about-feature-icon"></i>
+              <span class="about-feature-text">{{ f.text }}</span>
             </div>
           </div>
           {% endfor %}
@@ -51,21 +54,87 @@
         {% endwith %}
       </div>
     </div>
+  </div>
+</section>
 
-    {% if stat_items %}
-    <div class="row g-4 mt-4">
+<!-- ===== STATS ===== -->
+{% if stat_items %}
+<section style="background:var(--navy);padding:40px 0;">
+  <div class="container">
+    <div class="row g-4 justify-content-center">
       {% for stat in stat_items %}
       <div class="col-6 col-md-3">
-        <div style="text-align:center;padding:30px 20px;background:var(--navy);border-radius:var(--radius-lg);">
+        <div style="text-align:center;">
           <div style="font-size:28px;color:var(--accent);margin-bottom:8px;"><i class="{{ stat.icon }}"></i></div>
-          <div style="font-size:32px;font-weight:800;color:#fff;">{{ stat.number }}</div>
-          <div style="font-size:13px;color:rgba(255,255,255,0.7);">{{ stat.label }}</div>
+          <div style="font-size:34px;font-weight:800;color:#fff;line-height:1.1;">{{ stat.number }}</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-top:4px;">{{ stat.label }}</div>
         </div>
       </div>
       {% endfor %}
     </div>
-    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ===== NỘI DUNG CHI TIẾT (accordion theo h1) ===== -->
+<section class="section-pad">
+  <div class="container">
+    <div class="about-prose" id="aboutProseRaw">
+      {{ about.content|safe }}
+    </div>
   </div>
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var prose = document.getElementById('aboutProseRaw');
+  if (!prose) return;
+
+  // CKEditor dùng h1 cho section chính, h2 cho sub-section
+  var h1s = Array.from(prose.querySelectorAll('h1'));
+  if (!h1s.length) return;
+
+  // Nội dung trước h1 đầu tiên
+  var introHtml = '';
+  var node = prose.firstElementChild;
+  while (node && node !== h1s[0]) {
+    introHtml += node.outerHTML;
+    node = node.nextElementSibling;
+  }
+
+  // Tạo accordion từ các h1 section
+  var accordionHtml = '<div class="accordion about-accordion" id="aboutAccordion">';
+  h1s.forEach(function (h1, i) {
+    var collapseId = 'aCollapse' + i;
+    var bodyHtml = '';
+    var el = h1.nextElementSibling;
+    while (el && el.tagName !== 'H1') {
+      bodyHtml += el.outerHTML;
+      el = el.nextElementSibling;
+    }
+    var isFirst = i === 0;
+    accordionHtml += '<div class="accordion-item about-accordion-item">' +
+      '<h2 class="accordion-header">' +
+        '<button class="accordion-button about-acc-btn' + (isFirst ? '' : ' collapsed') + '" ' +
+                'type="button" data-bs-toggle="collapse" data-bs-target="#' + collapseId + '" ' +
+                'aria-expanded="' + isFirst + '">' +
+          h1.innerHTML +
+        '</button>' +
+      '</h2>' +
+      '<div id="' + collapseId + '" class="accordion-collapse collapse' + (isFirst ? ' show' : '') + '" ' +
+           'data-bs-parent="#aboutAccordion">' +
+        '<div class="accordion-body about-acc-body">' + bodyHtml + '</div>' +
+      '</div>' +
+    '</div>';
+  });
+  accordionHtml += '</div>';
+
+  prose.innerHTML =
+    (introHtml ? '<div class="about-prose-intro">' + introHtml + '</div>' : '') +
+    accordionHtml;
+});
+</script>
 {% endblock %}
