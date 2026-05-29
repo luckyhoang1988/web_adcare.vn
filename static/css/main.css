@@ -194,6 +194,26 @@ img { max-width: 100%; height: auto; }
   background: linear-gradient(to bottom, transparent, #fff);
   pointer-events: none;
 }
+.about-content-inner h1,
+.about-content-inner h2 {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.about-content-inner h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.about-content-inner p {
+  font-size: 14.5px;
+  line-height: 1.85;
+  margin-bottom: 10px;
+}
+.about-content-inner strong { color: var(--navy-dark); }
 
 /* ---- About accordion (trang chi tiết) ---- */
 .about-prose-intro {
