@@ -179,6 +179,22 @@ img { max-width: 100%; height: auto; }
 .text-navy { color: var(--navy) !important; }
 .text-accent { color: var(--accent) !important; }
 
+/* ---- About content preview (trang chủ) ---- */
+.about-content-preview {
+  position: relative;
+  max-height: 260px;
+  overflow: hidden;
+}
+.about-content-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, #fff);
+  pointer-events: none;
+}
+
 /* ---- About features ---- */
 .about-feature-item {
   display: flex;

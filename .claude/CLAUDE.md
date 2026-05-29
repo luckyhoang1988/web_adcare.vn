@@ -54,15 +54,15 @@ ALTER TABLE <tên_bảng> ADD COLUMN IF NOT EXISTS <tên_cột> varchar(200) NOT
 \q
 ```
 ```bash
-# Bước 2: Điền data cho cột mới (ví dụ slug)
+# Bước 2: Điền data cho cột mới
 python3 manage.py shell -c "
-from apps.core.models import AboutSection, vi_slugify
-for s in AboutSection.objects.all():
-    base = vi_slugify(s.title)
+from apps.<app>.models import <Model>, vi_slugify
+for obj in <Model>.objects.all():
+    base = vi_slugify(obj.title)
     slug = base; i = 2
-    while AboutSection.objects.filter(slug=slug).exclude(pk=s.pk).exists():
+    while <Model>.objects.filter(slug=slug).exclude(pk=obj.pk).exists():
         slug = f'{base}-{i}'; i += 1
-    AboutSection.objects.filter(pk=s.pk).update(slug=slug)
+    <Model>.objects.filter(pk=obj.pk).update(slug=slug)
 print('Done')
 "
 
@@ -74,10 +74,8 @@ ALTER TABLE <tên_bảng> ADD CONSTRAINT <tên_constraint> UNIQUE (<tên_cột>)
 \q
 ```
 ```bash
-# Bước 4: Fake migration (đánh dấu đã apply mà không chạy lại)
+# Bước 4: Fake migration rồi chạy các migration còn lại
 python3 manage.py migrate <app> <số_migration> --fake
-
-# Bước 5: Chạy các migration còn lại
 python3 manage.py migrate
 ```
 
@@ -146,14 +144,11 @@ Mỗi section là một trang riêng với URL `/gioi-thieu/<slug>/`.
 - `menu_order` — thứ tự trong menu
 - `meta_title`, `meta_desc` — SEO per-page
 - `get_absolute_url()` — trả về `/gioi-thieu/<slug>/`
+- `content` — CKEditor, render bằng `{{ about.content|safe }}` (không dùng `|linebreaks`)
 
-**Template:** `templates/core/about_detail.html`
-**View:** `AboutDetailView` tại `apps/core/views.py`
+**Template:** `templates/core/about_detail.html` · **View:** `AboutDetailView` tại `apps/core/views.py`
 
-**`vi_slugify(text)`** — hàm trong `apps/core/models.py`, chuyển tiếng Việt có dấu thành slug ASCII không dấu. Không cần thư viện ngoài.
-
-### AboutSection — nội dung soạn thảo bằng CKEditor
-Field `content` dùng CKEditorWidget. Template render bằng `{{ about.content|safe }}` (không dùng `|linebreaks`).
+**`vi_slugify(text)`** — hàm trong `apps/core/models.py`, chuyển tiếng Việt có dấu thành slug ASCII. Không cần thư viện ngoài.
 
 ---
 
@@ -171,7 +166,6 @@ File: `apps/core/admin_utils.py`
 **Áp dụng cho:** `MenuItem` · `ProductCategory` · `Product` · `ServiceCategory` · `Service` · `NewsCategory` · `Article` · `ProjectCategory` · `Project`
 
 ```python
-# Cách dùng trong admin
 from apps.core.admin_utils import DuplicateMixin, make_duplicate_action
 
 class MyAdmin(DuplicateMixin, admin.ModelAdmin):
@@ -199,7 +193,16 @@ Cache 3600s, inject vào **mọi template**:
 
 ## Templates
 
-`templates/` toàn cục — tất cả kế thừa `base.html`. Components dùng chung: `templates/components/` (navbar, footer, breadcrumb).
+`templates/` toàn cục — tất cả kế thừa `base.html`.
+
+**Components dùng chung** (`templates/components/`):
+
+| File | Mô tả |
+|------|-------|
+| `navbar.html` | Navbar + top bar + mega/grid dropdown |
+| `footer.html` | Footer 4 cột |
+| `breadcrumb.html` | Breadcrumb — truyền `breadcrumbs` list (mỗi phần tử có `name`, `url`) |
+| `pagination.html` | Phân trang — dùng `{% include 'components/pagination.html' %}` |
 
 **Blocks quan trọng trong `base.html`:**
 
@@ -221,6 +224,38 @@ Không dùng inline style — `mobile.css` tự override responsive.
 
 ---
 
+## Phân trang (Pagination)
+
+Tất cả list views dùng `paginate_by = 9` và component `templates/components/pagination.html`.
+
+**Pattern chuẩn cho list view có filter `?danh-muc=`:**
+```python
+def get_context_data(self, **kwargs):
+    ctx = super().get_context_data(**kwargs)
+    slug = self.request.GET.get('danh-muc')
+    if slug:
+        ctx['current_category'] = get_object_or_404(MyCategory, slug=slug)
+        ctx['pagination_base_url'] = f'?danh-muc={slug}&'
+    else:
+        ctx['current_category'] = None
+        ctx['pagination_base_url'] = '?'
+    return ctx
+```
+
+**Pattern cho view không dùng query param (URL path):**
+```python
+ctx['pagination_base_url'] = '?'
+```
+
+**Trong template:**
+```html
+{% include 'components/pagination.html' %}
+```
+
+> `pagination_base_url` đảm bảo link trang giữ nguyên filter — ví dụ `?danh-muc=camera&page=2`.
+
+---
+
 ## Hình ảnh
 
 ### Upload & Resize
@@ -229,7 +264,6 @@ Không dùng inline style — `mobile.css` tự override responsive.
 ### Mobile variants (django-imagekit)
 Mỗi model có ảnh đều có `image_mobile = ImageSpecField(...)` tự tạo bản mobile nhỏ hơn.
 
-Kích thước mobile:
 | Model | Desktop | Mobile |
 |-------|---------|--------|
 | Slider | 1920×800 | 576×400 |
@@ -300,13 +334,13 @@ __pycache__/
 ## Lưu ý quan trọng
 
 - **Migration:** luôn `makemigrations` + `migrate` sau khi sửa model
-- **Migration unique field trên DB có data:** xem phần "Fix lỗi migration" ở trên — không chạy migrate thẳng, phải thêm cột thủ công → điền data → thêm constraint → fake migrate
+- **Migration unique field trên DB có data:** xem phần "Fix lỗi migration" ở trên — không chạy migrate thẳng
+- **Phân trang:** `paginate_by = 9` cho mọi list view; luôn thêm `pagination_base_url` vào context
 - **`is_active`:** hầu hết models có cờ này — query nên filter `is_active=True`
 - **select_related:** dùng `select_related('category')` khi query FK — tránh N+1
 - **prefetch_related:** dùng `prefetch_related('children')` cho MenuItem
 - **Section spacing:** class `section-pad` (70px) / `section-pad-sm` (50px) — không inline padding
 - **`get_absolute_url()`:** `Product` trả về `product_list` nếu không có category
-- **Breadcrumb:** truyền `breadcrumbs` list vào context, mỗi phần tử có `name` và `url`
 - **Thêm app mới:** đăng ký `apps.<tên>` trong `INSTALLED_APPS`, sửa `apps.py` cho đúng `name`
 - **CKEditor content:** render bằng `|safe`, không dùng `|linebreaks`
 - **Jazzmin logout:** render là `<form>` không phải `<a>` — style qua `#logout-form button.dropdown-item`
