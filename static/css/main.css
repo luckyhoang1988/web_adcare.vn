@@ -182,7 +182,7 @@ img { max-width: 100%; height: auto; }
 /* ---- About content preview (trang chủ) ---- */
 .about-content-preview {
   position: relative;
-  max-height: 260px;
+  max-height: 360px;
   overflow: hidden;
 }
 .about-content-fade {
