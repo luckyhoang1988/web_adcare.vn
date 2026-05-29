@@ -63,6 +63,10 @@ class SiteConfig(models.Model):
         'Mô tả footer', blank=True,
         help_text='Đoạn giới thiệu ngắn hiển thị ở footer. Để trống sẽ dùng slogan.'
     )
+    pdf_profile = models.FileField(
+        'Hồ sơ năng lực (PDF)', upload_to='documents/', blank=True,
+        help_text='File PDF hồ sơ năng lực công ty. Sẽ hiển thị nút tải ở trang Giới thiệu và Footer.'
+    )
     meta_description = models.TextField('Meta Description', blank=True)
     meta_keywords = models.TextField('Meta Keywords', blank=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -135,6 +139,10 @@ class AboutSection(models.Model):
     image = ResizedImageField('Hình ảnh', size=[700, 500], upload_to='about/', quality=85)
     image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 343)], format='JPEG', options={'quality': 80})
     image_alt = models.CharField('Alt text ảnh', max_length=200, blank=True)
+    pdf_file = models.FileField(
+        'File PDF (Hồ sơ năng lực)', upload_to='documents/', blank=True,
+        help_text='Upload file PDF để hiển thị nút tải trên trang này.'
+    )
     button_text = models.CharField('Nút - Text', max_length=50, default='Xem thêm')
     button_url = models.CharField('Nút - URL', max_length=200, default='/ve-chung-toi/')
     meta_title = models.CharField('Meta Title', max_length=200, blank=True,

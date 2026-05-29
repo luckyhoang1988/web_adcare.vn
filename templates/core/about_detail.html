@@ -64,6 +64,13 @@
     <div class="about-prose" id="aboutProseRaw">
       {{ about.content|safe }}
     </div>
+    {% if about.pdf_file %}
+    <div class="text-center mt-5">
+      <a href="{{ about.pdf_file.url }}" target="_blank" class="btn btn-accent btn-lg">
+        <i class="fas fa-file-pdf me-2"></i>Tải hồ sơ năng lực (PDF)
+      </a>
+    </div>
+    {% endif %}
   </div>
 </section>
 

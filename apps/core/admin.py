@@ -18,7 +18,7 @@ class AboutSectionForm(forms.ModelForm):
 class SiteConfigAdmin(admin.ModelAdmin):
     fieldsets = (
         ('Thông tin công ty', {
-            'fields': ('company_name', 'company_name_en', 'slogan', 'logo', 'favicon')
+            'fields': ('company_name', 'company_name_en', 'slogan', 'logo', 'favicon', 'pdf_profile')
         }),
         ('Liên hệ', {
             'fields': ('address', 'phone', 'phone_2', 'email', 'email_2')
@@ -79,7 +79,7 @@ class AboutSectionAdmin(admin.ModelAdmin):
     inlines = [AboutFeatureInline]
     fieldsets = (
         ('Nội dung', {
-            'fields': ('title', 'slug', 'subtitle', 'content', 'image', 'image_alt', 'button_text', 'button_url')
+            'fields': ('title', 'slug', 'subtitle', 'content', 'image', 'image_alt', 'pdf_file', 'button_text', 'button_url')
         }),
         ('Vị trí hiển thị trên Menu', {
             'fields': ('show_in_menu', 'auto_add_menu', 'menu_parent', 'menu_order'),
