@@ -1,5 +1,6 @@
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from .models import Project, ProjectCategory
 
 
@@ -40,4 +41,10 @@ class ProjectDetailView(DetailView):
         ctx = super().get_context_data(**kwargs)
         ctx['other_projects'] = Project.objects.filter(is_active=True).select_related('category').exclude(pk=self.object.pk)[:4]
         ctx['gallery'] = self.object.images.all()
+        cat = self.object.category
+        crumbs = [{'name': 'Dự án', 'url': reverse('project_list')}]
+        if cat:
+            crumbs.append({'name': cat.name, 'url': f"{reverse('project_list')}?danh-muc={cat.slug}"})
+        crumbs.append({'name': self.object.name, 'url': None})
+        ctx['breadcrumbs'] = crumbs
         return ctx

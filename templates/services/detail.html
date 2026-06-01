@@ -39,9 +39,10 @@
 <div class="page-header">
   <div class="container">
     <h1 style="font-size:26px;">{{ service.name }}</h1>
-    <p><a href="{% url 'service_list' %}" style="color:inherit;">Dịch vụ</a> › {{ service.name }}</p>
   </div>
 </div>
+
+{% include 'components/breadcrumb.html' with breadcrumbs=breadcrumbs %}
 
 <section class="section-pad">
   <div class="container">

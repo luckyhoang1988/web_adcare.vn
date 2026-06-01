@@ -42,15 +42,10 @@
 <div class="page-header">
   <div class="container">
     <h1 style="font-size:26px;">{{ product.name }}</h1>
-    {% if product.category %}
-    <p style="font-size:13px;">
-      <a href="{% url 'product_list' %}" style="color:inherit;">Sản phẩm</a> ›
-      <a href="{{ product.category.get_absolute_url }}" style="color:inherit;">{{ product.category.name }}</a> ›
-      {{ product.name }}
-    </p>
-    {% endif %}
   </div>
 </div>
+
+{% include 'components/breadcrumb.html' with breadcrumbs=breadcrumbs %}
 
 <section class="section-pad">
   <div class="container">

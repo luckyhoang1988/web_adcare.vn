@@ -1,6 +1,7 @@
 from django.db.models import F
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from .models import Article, NewsCategory
 
 
@@ -43,4 +44,10 @@ class ArticleDetailView(DetailView):
         ctx['related_articles'] = Article.objects.filter(
             status='published', category=self.object.category
         ).select_related('category').exclude(pk=self.object.pk)[:3]
+        cat = self.object.category
+        crumbs = [{'name': 'Tin tức', 'url': reverse('news_list')}]
+        if cat:
+            crumbs.append({'name': cat.name, 'url': f"{reverse('news_list')}?danh-muc={cat.slug}"})
+        crumbs.append({'name': self.object.title, 'url': None})
+        ctx['breadcrumbs'] = crumbs
         return ctx

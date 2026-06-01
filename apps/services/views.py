@@ -1,5 +1,6 @@
 from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from .models import Service, ServiceCategory
 
 
@@ -40,4 +41,10 @@ class ServiceDetailView(DetailView):
         ctx = super().get_context_data(**kwargs)
         ctx['other_services'] = Service.objects.filter(is_active=True).select_related('category').exclude(
             pk=self.object.pk)[:4]
+        cat = self.object.category
+        crumbs = [{'name': 'Dịch vụ', 'url': reverse('service_list')}]
+        if cat:
+            crumbs.append({'name': cat.name, 'url': f"{reverse('service_list')}?danh-muc={cat.slug}"})
+        crumbs.append({'name': self.object.name, 'url': None})
+        ctx['breadcrumbs'] = crumbs
         return ctx
