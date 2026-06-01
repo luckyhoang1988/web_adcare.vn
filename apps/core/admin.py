@@ -32,7 +32,7 @@ class AboutSectionForm(forms.ModelForm):
 
 
 @admin.register(SiteConfig)
-class SiteConfigAdmin(admin.ModelAdmin):
+class SiteConfigAdmin(ClearMenuCacheMixin, admin.ModelAdmin):
     fieldsets = (
         ('Thông tin công ty', {
             'fields': ('company_name', 'company_name_en', 'slogan', 'logo', 'favicon', 'pdf_profile')

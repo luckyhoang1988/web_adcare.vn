@@ -24,7 +24,7 @@ class ServiceCategoryAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin
 
 
 @admin.register(Service)
-class ServiceAdmin(DuplicateMixin, admin.ModelAdmin):
+class ServiceAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin):
     form = ServiceAdminForm
     list_display = ('name', 'category', 'is_featured', 'is_active', 'order', 'preview_image', 'copy_link')
     list_editable = ('is_featured', 'is_active', 'order')
