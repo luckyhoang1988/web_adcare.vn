@@ -241,6 +241,13 @@
         {% endif %}
 
       </ul>
+      <form action="{% url 'search' %}" method="get" role="search" class="navbar-search ms-lg-3 my-2 my-lg-0">
+        <div class="input-group input-group-sm">
+          <input type="search" name="q" value="{{ request.GET.q }}" class="form-control"
+                 placeholder="Tìm kiếm..." aria-label="Tìm kiếm">
+          <button class="btn navbar-search-btn" type="submit" aria-label="Tìm"><i class="fas fa-search"></i></button>
+        </div>
+      </form>
       {% if site_config.phone %}
       <a href="tel:{{ site_config.phone }}" class="btn-primary-custom ms-3 d-none d-lg-inline-flex align-items-center gap-2">
         <i class="fas fa-phone-alt"></i> {{ site_config.phone }}

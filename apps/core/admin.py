@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from .models import SiteConfig, Slider, StatItem, AboutSection, AboutFeature, MenuItem
-from .admin_utils import DuplicateMixin, make_duplicate_action
+from .admin_utils import DuplicateMixin, ClearMenuCacheMixin, make_duplicate_action
 
 
 class AboutSectionForm(forms.ModelForm):
@@ -48,6 +48,7 @@ class SliderAdmin(admin.ModelAdmin):
     list_display = ('title', 'order', 'is_active', 'preview_image')
     list_editable = ('order', 'is_active')
     list_display_links = ('title',)
+    search_fields = ('title',)
 
     def preview_image(self, obj):
         if obj.image:
@@ -61,6 +62,7 @@ class StatItemAdmin(admin.ModelAdmin):
     list_display = ('label', 'number', 'icon', 'order', 'is_active')
     list_editable = ('order', 'is_active')
     list_display_links = ('label',)
+    search_fields = ('label',)
 
 
 class AboutFeatureInline(admin.TabularInline):
@@ -70,7 +72,7 @@ class AboutFeatureInline(admin.TabularInline):
 
 
 @admin.register(AboutSection)
-class AboutSectionAdmin(admin.ModelAdmin):
+class AboutSectionAdmin(ClearMenuCacheMixin, admin.ModelAdmin):
     form = AboutSectionForm
     list_display = ('title', 'page_url_display', 'show_in_menu', 'menu_status', 'is_active', 'preview_link', 'updated_at')
     list_editable = ('show_in_menu', 'is_active')
@@ -177,6 +179,7 @@ class MenuItemAdmin(DuplicateMixin, admin.ModelAdmin):
     list_display = ('display_title', 'item_type', 'dropdown_style', 'url', 'order', 'is_active', 'copy_link')
     list_editable = ('order', 'is_active')
     list_display_links = ('display_title',)
+    list_per_page = 25
     ordering = ('order',)
     inlines = [MenuSubItemInline]
     actions = [make_duplicate_action('menu')]

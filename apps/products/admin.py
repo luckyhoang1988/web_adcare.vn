@@ -37,6 +37,7 @@ class ProductAdmin(DuplicateMixin, admin.ModelAdmin):
     list_display_links = ('name',)
     list_filter = ('category', 'is_featured', 'is_active', 'brand')
     list_select_related = ('category',)
+    list_per_page = 25
     search_fields = ('name', 'brand', 'model_number', 'short_desc')
     inlines = [ProductImageInline]
     actions = [make_duplicate_action('sản phẩm')]

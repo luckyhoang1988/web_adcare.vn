@@ -32,6 +32,7 @@ class ArticleAdmin(DuplicateMixin, admin.ModelAdmin):
     list_display_links = ('title',)
     list_filter = ('category', 'status', 'is_featured')
     list_select_related = ('category',)
+    list_per_page = 25
     search_fields = ('title', 'summary', 'content')
     date_hierarchy = 'published_at'
     fieldsets = (

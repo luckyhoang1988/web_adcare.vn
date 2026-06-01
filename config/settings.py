@@ -122,6 +122,17 @@ else:
         }
     }
 
+# Email — đọc từ .env. Dev: console backend in ra terminal; Prod: SMTP thật.
+EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST', default='')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='ADCARE Website <no-reply@adcare.vn>')
+# Địa chỉ nhận thông báo khi có liên hệ mới (để trống = không gửi)
+CONTACT_NOTIFY_EMAIL = config('CONTACT_NOTIFY_EMAIL', default='')
+
 X_FRAME_OPTIONS = 'DENY'
 
 if not DEBUG:
@@ -178,7 +189,13 @@ JAZZMIN_SETTINGS = {
     'site_brand': 'ADCARE',
     'site_logo': None,
     'welcome_sign': 'Chào mừng đến ADCARE Admin',
-    'search_model': ['auth.User'],
+    'search_model': [
+        'apps.products.product',
+        'apps.services.service',
+        'apps.news.article',
+        'apps.projects.project',
+        'auth.user',
+    ],
     'topmenu_links': [
         {'name': 'Trang chủ website', 'url': '/', 'new_window': True},
     ],

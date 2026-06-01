@@ -26,6 +26,7 @@ class ProjectAdmin(DuplicateMixin, admin.ModelAdmin):
     list_display_links = ('name',)
     list_filter = ('category', 'is_featured', 'is_active', 'year')
     list_select_related = ('category',)
+    list_per_page = 25
     search_fields = ('name', 'client', 'location', 'short_desc')
     inlines = [ProjectImageInline]
     fieldsets = (

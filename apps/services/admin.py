@@ -31,6 +31,7 @@ class ServiceAdmin(DuplicateMixin, admin.ModelAdmin):
     list_display_links = ('name',)
     list_filter = ('category', 'is_featured', 'is_active')
     list_select_related = ('category',)
+    list_per_page = 25
     search_fields = ('name', 'short_desc', 'icon')
     fieldsets = (
         ('Thông tin cơ bản', {
