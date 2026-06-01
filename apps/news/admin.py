@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from django.utils import timezone
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from .models import NewsCategory, Article
@@ -19,6 +20,7 @@ class NewsCategoryAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin):
     list_display = ('name', 'slug', 'order', 'is_active', 'show_in_menu', 'copy_link')
     list_editable = ('order', 'is_active', 'show_in_menu')
     list_display_links = ('name',)
+    search_fields = ('name',)
     actions = [make_duplicate_action('danh mục')]
 
 
@@ -47,7 +49,6 @@ class ArticleAdmin(DuplicateMixin, admin.ModelAdmin):
     actions = ['make_published', make_duplicate_action('bài viết')]
 
     def make_published(self, request, queryset):
-        from django.utils import timezone
         queryset.update(status='published', published_at=timezone.now())
     make_published.short_description = 'Đăng các bài đã chọn'
 

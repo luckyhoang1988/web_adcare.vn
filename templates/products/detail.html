@@ -5,6 +5,7 @@
 {% block meta_desc %}{{ product.short_desc }}{% endblock %}
 {% block og_tags %}
 {{ block.super }}
+<meta property="og:type" content="product">
 {% if product.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ product.image.url }}">{% endif %}
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 {% endblock %}
@@ -19,6 +20,19 @@
   {% if product.brand %}"brand": {"@type": "Brand", "name": "{{ product.brand|escapejs }}"},{% endif %}
   {% if product.model_number %}"model": "{{ product.model_number|escapejs }}",{% endif %}
   "url": "{{ request.build_absolute_uri }}"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Trang chủ", "item": "{{ request.scheme }}://{{ request.get_host }}/"},
+    {"@type": "ListItem", "position": 2, "name": "Sản phẩm", "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'product_list' %}"}{% if product.category %},
+    {"@type": "ListItem", "position": 3, "name": "{{ product.category.name|escapejs }}", "item": "{{ request.scheme }}://{{ request.get_host }}{{ product.category.get_absolute_url }}"},
+    {"@type": "ListItem", "position": 4, "name": "{{ product.name|escapejs }}"}{% else %},
+    {"@type": "ListItem", "position": 3, "name": "{{ product.name|escapejs }}"}{% endif %}
+  ]
 }
 </script>
 {% endblock %}

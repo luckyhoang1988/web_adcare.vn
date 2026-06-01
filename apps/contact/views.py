@@ -1,7 +1,6 @@
 from django.views.generic import FormView, TemplateView
 from django.urls import reverse_lazy
 from .forms import ContactForm
-from .models import ContactMessage
 
 
 class ContactView(FormView):
@@ -13,7 +12,7 @@ class ContactView(FormView):
         obj = form.save(commit=False)
         x_forwarded_for = self.request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
-            obj.ip_address = x_forwarded_for.split(',')[0]
+            obj.ip_address = x_forwarded_for.split(',')[0].strip()
         else:
             obj.ip_address = self.request.META.get('REMOTE_ADDR')
         obj.save()

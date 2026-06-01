@@ -100,27 +100,31 @@ class AboutSectionAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
-        if not obj.slug or not obj.auto_add_menu:
+        if not obj.slug:
             return
         from django.core.cache import cache
         url = obj.get_absolute_url()
-        item, created = MenuItem.objects.get_or_create(
-            url=url,
-            defaults={
-                'title': obj.title,
-                'item_type': 'custom',
-                'parent': obj.menu_parent,
-                'order': obj.menu_order,
-                'is_active': obj.is_active,
-            }
-        )
-        if not created:
-            item.title = obj.title
-            item.parent = obj.menu_parent
-            item.order = obj.menu_order
-            item.is_active = obj.is_active
-            item.save()
-        cache.clear()
+        if obj.auto_add_menu:
+            item, created = MenuItem.objects.get_or_create(
+                url=url,
+                defaults={
+                    'title': obj.title,
+                    'item_type': 'custom',
+                    'parent': obj.menu_parent,
+                    'order': obj.menu_order,
+                    'is_active': obj.is_active,
+                }
+            )
+            if not created:
+                item.title = obj.title
+                item.parent = obj.menu_parent
+                item.order = obj.menu_order
+                item.is_active = obj.is_active
+                item.save()
+        else:
+            # Tắt auto_add_menu → deactivate MenuItem đã tạo tự động
+            MenuItem.objects.filter(url=url, item_type='custom').update(is_active=False)
+        cache.delete('global_nav')
 
     def page_url_display(self, obj):
         if not obj.slug:

@@ -10,21 +10,21 @@ class ProjectListView(ListView):
 
     def get_queryset(self):
         qs = Project.objects.filter(is_active=True).select_related('category')
+        self.current_category = None
         slug = self.request.GET.get('danh-muc')
         if slug:
-            qs = qs.filter(category__slug=slug)
+            self.current_category = get_object_or_404(ProjectCategory, slug=slug, is_active=True)
+            qs = qs.filter(category=self.current_category)
         return qs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['categories'] = ProjectCategory.objects.filter(is_active=True)
         ctx['page_title'] = 'Dự án'
-        slug = self.request.GET.get('danh-muc')
-        if slug:
-            ctx['current_category'] = get_object_or_404(ProjectCategory, slug=slug, is_active=True)
-            ctx['pagination_base_url'] = f'?danh-muc={slug}&'
+        ctx['current_category'] = self.current_category
+        if self.current_category:
+            ctx['pagination_base_url'] = f'?danh-muc={self.current_category.slug}&'
         else:
-            ctx['current_category'] = None
             ctx['pagination_base_url'] = '?'
         return ctx
 

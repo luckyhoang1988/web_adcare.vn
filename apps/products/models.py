@@ -15,7 +15,7 @@ class ProductCategory(models.Model):
     icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True,
                             help_text='VD: fas fa-camera, fas fa-shield-alt')
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     show_in_menu = models.BooleanField('Hiển thị trong menu', default=True,
                                        help_text='Bật để danh mục này xuất hiện trong dropdown menu điều hướng.')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -54,7 +54,7 @@ class Product(models.Model):
     model_number = models.CharField('Model', max_length=100, blank=True)
     specifications = models.TextField('Thông số kỹ thuật', blank=True)
     is_featured = models.BooleanField('Nổi bật (hiện trang chủ)', default=False)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
     view_count = models.PositiveIntegerField('Lượt xem', default=0)
     created_at = models.DateTimeField(auto_now_add=True)

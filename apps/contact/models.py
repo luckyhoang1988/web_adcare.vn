@@ -25,5 +25,11 @@ class ContactMessage(models.Model):
         verbose_name = 'Tin nhắn liên hệ'
         verbose_name_plural = 'Tin nhắn liên hệ'
 
+    def save(self, *args, **kwargs):
+        if self.status == 'replied' and not self.replied_at:
+            from django.utils import timezone
+            self.replied_at = timezone.now()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f'{self.full_name} - {self.subject}'

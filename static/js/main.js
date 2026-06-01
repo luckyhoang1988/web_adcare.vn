@@ -9,10 +9,14 @@ document.addEventListener('DOMContentLoaded', function () {
   const currentPath = window.location.pathname;
   document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
     const href = link.getAttribute('href');
-    if (href && href !== '/' && currentPath.startsWith(href)) {
-      link.closest('.nav-item')?.classList.add('active');
-    } else if (href === '/' && currentPath === '/') {
-      link.closest('.nav-item')?.classList.add('active');
+    if (!href) return;
+    if (href === '/') {
+      if (currentPath === '/') link.closest('.nav-item')?.classList.add('active');
+    } else {
+      const base = href.endsWith('/') ? href : href + '/';
+      if (currentPath === href || currentPath.startsWith(base)) {
+        link.closest('.nav-item')?.classList.add('active');
+      }
     }
   });
 
@@ -30,8 +34,15 @@ document.addEventListener('DOMContentLoaded', function () {
   // Back to top button
   const backBtn = document.getElementById('backToTop');
   if (backBtn) {
+    let ticking = false;
     window.addEventListener('scroll', () => {
-      backBtn.classList.toggle('show', window.scrollY > 400);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          backBtn.classList.toggle('show', window.scrollY > 400);
+          ticking = false;
+        });
+        ticking = true;
+      }
     });
     backBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
   }

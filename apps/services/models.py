@@ -14,7 +14,7 @@ class ServiceCategory(models.Model):
     image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='services/categories/', blank=True, quality=85)
     image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     show_in_menu = models.BooleanField('Hiển thị trong menu', default=True,
                                        help_text='Bật để danh mục này xuất hiện trong dropdown menu điều hướng.')
 
@@ -47,7 +47,7 @@ class Service(models.Model):
     image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
     icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True)
     is_featured = models.BooleanField('Nổi bật (hiện trang chủ)', default=False)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 

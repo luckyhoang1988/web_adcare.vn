@@ -26,5 +26,5 @@ def site_config(request):
             'nav_about_sections': list(AboutSection.objects.filter(is_active=True, show_in_menu=True).order_by('menu_order')),
             'footer_services': list(Service.objects.filter(is_active=True).order_by('order')[:6]),
         }
-        cache.set('global_nav', data, 3600)
+        cache.set('global_nav', data, 86400)
     return data

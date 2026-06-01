@@ -7,8 +7,9 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'email', 'phone', 'subject', 'status', 'created_at')
     list_editable = ('status',)
     list_display_links = ('full_name',)
-    list_filter = ('status', 'created_at')
-    search_fields = ('full_name', 'email', 'phone', 'subject', 'message')
+    list_filter = ('status',)
+    date_hierarchy = 'created_at'
+    search_fields = ('full_name', 'email', 'phone', 'subject', 'message', 'company')
     readonly_fields = ('full_name', 'email', 'phone', 'company', 'subject',
                        'message', 'ip_address', 'created_at')
     fieldsets = (

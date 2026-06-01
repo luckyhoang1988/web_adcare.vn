@@ -11,7 +11,7 @@ class ProjectCategory(models.Model):
     slug = models.SlugField('Slug', unique=True, blank=True)
     icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     show_in_menu = models.BooleanField('Hiển thị trong menu', default=True,
                                        help_text='Bật để danh mục này xuất hiện trong dropdown menu điều hướng.')
 
@@ -51,7 +51,7 @@ class Project(models.Model):
     location = models.CharField('Địa điểm', max_length=300, blank=True)
     year = models.PositiveSmallIntegerField('Năm thực hiện', null=True, blank=True)
     is_featured = models.BooleanField('Nổi bật (hiện trang chủ)', default=False)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 

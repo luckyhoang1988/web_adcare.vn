@@ -9,6 +9,7 @@ class ProjectCategoryAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin
     list_display = ('name', 'slug', 'order', 'is_active', 'show_in_menu', 'copy_link')
     list_editable = ('order', 'is_active', 'show_in_menu')
     list_display_links = ('name',)
+    search_fields = ('name',)
     actions = [make_duplicate_action('danh mục')]
 
 
@@ -27,6 +28,17 @@ class ProjectAdmin(DuplicateMixin, admin.ModelAdmin):
     list_select_related = ('category',)
     search_fields = ('name', 'client', 'location', 'short_desc')
     inlines = [ProjectImageInline]
+    fieldsets = (
+        ('Thông tin cơ bản', {
+            'fields': ('category', 'name', 'slug', 'client', 'location', 'year', 'image')
+        }),
+        ('Mô tả', {
+            'fields': ('short_desc', 'description')
+        }),
+        ('Cài đặt', {
+            'fields': ('is_featured', 'is_active', 'order')
+        }),
+    )
     actions = [make_duplicate_action('dự án')]
 
     def preview_image(self, obj):

@@ -81,10 +81,16 @@ class SiteConfig(models.Model):
     def save(self, *args, **kwargs):
         self.pk = 1
         super().save(*args, **kwargs)
+        from django.core.cache import cache
+        cache.delete('site_config_singleton')
 
     @classmethod
     def get(cls):
-        obj, _ = cls.objects.get_or_create(pk=1)
+        from django.core.cache import cache
+        obj = cache.get('site_config_singleton')
+        if obj is None:
+            obj, _ = cls.objects.get_or_create(pk=1)
+            cache.set('site_config_singleton', obj, 86400)
         return obj
 
 
@@ -98,7 +104,7 @@ class Slider(models.Model):
     button2_text = models.CharField('Nút 2 - Text', max_length=50, blank=True)
     button2_url = models.CharField('Nút 2 - URL', max_length=200, blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -117,7 +123,7 @@ class StatItem(models.Model):
     label = models.CharField('Nhãn', max_length=100)
     description = models.CharField('Mô tả phụ', max_length=200, blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
 
     class Meta:
         ordering = ['order']
@@ -148,7 +154,7 @@ class AboutSection(models.Model):
     meta_title = models.CharField('Meta Title', max_length=200, blank=True,
                                   help_text='Tiêu đề SEO. Để trống sẽ dùng tiêu đề chính.')
     meta_desc = models.TextField('Meta Description', max_length=300, blank=True)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     show_in_menu = models.BooleanField(
         'Hiển thị trong menu dropdown', default=False,
         help_text='Bật để section này tự xuất hiện trong dropdown của menu "Về chúng tôi" mà không cần tạo MenuItem.'
@@ -222,7 +228,7 @@ class MenuItem(models.Model):
                                       default='list',
                                       help_text='Chỉ áp dụng khi menu cấp 1 có menu con.')
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     open_in_new_tab = models.BooleanField('Mở tab mới', default=False)
 
     class Meta:

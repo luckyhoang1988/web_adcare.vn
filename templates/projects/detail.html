@@ -5,6 +5,7 @@
 {% block meta_desc %}{{ project.short_desc }}{% endblock %}
 {% block og_tags %}
 {{ block.super }}
+<meta property="og:type" content="website">
 {% if project.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ project.image.url }}">{% endif %}
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 {% endblock %}
@@ -18,6 +19,17 @@
   {% if project.image %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ project.image.url }}",{% endif %}
   "creator": {"@type": "Organization", "name": "{{ site_config.company_name|default:'ADCARE Việt Nam' }}"},
   "url": "{{ request.build_absolute_uri }}"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Trang chủ", "item": "{{ request.scheme }}://{{ request.get_host }}/"},
+    {"@type": "ListItem", "position": 2, "name": "Dự án", "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'project_list' %}"},
+    {"@type": "ListItem", "position": 3, "name": "{{ project.name|escapejs }}"}
+  ]
 }
 </script>
 {% endblock %}

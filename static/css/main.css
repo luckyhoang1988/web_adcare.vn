@@ -2,7 +2,6 @@
    ADCARE Việt Nam - Main CSS
    ============================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --navy:        #2e5c10;   /* xanh đậm (nền navbar, footer, header) */
@@ -429,4 +428,16 @@ img { max-width: 100%; height: auto; }
   color: rgba(255,255,255,0.65);
   margin-top: 3px;
   line-height: 1.4;
+}
+
+/* Service card — featured services on homepage */
+.service-card-inner {
+  background: rgba(255,255,255,0.05);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: var(--transition);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.service-card-inner:hover {
+  background: rgba(255,255,255,0.1);
 }

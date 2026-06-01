@@ -15,7 +15,7 @@ class Partner(models.Model):
     partner_type = models.CharField('Loại', max_length=20, choices=PARTNER_TYPE, default='partner')
     description = models.TextField('Mô tả', blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

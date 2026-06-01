@@ -121,3 +121,10 @@
   .btn-primary-custom,
   .btn-outline-custom { padding: 9px 16px; font-size: 13px; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

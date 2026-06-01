@@ -12,7 +12,7 @@ class NewsCategory(models.Model):
     slug = models.SlugField('Slug', unique=True, blank=True)
     description = models.TextField('Mô tả', blank=True)
     order = models.PositiveSmallIntegerField('Thứ tự', default=0)
-    is_active = models.BooleanField('Hiển thị', default=True)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
     show_in_menu = models.BooleanField('Hiển thị trong menu', default=True,
                                        help_text='Bật để danh mục này xuất hiện trong dropdown menu điều hướng.')
 
@@ -48,10 +48,10 @@ class Article(models.Model):
     image = ResizedImageField('Ảnh đại diện', size=[1200, 630], upload_to='news/', quality=85)
     image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(576, 302)], format='JPEG', options={'quality': 80})
     author = models.CharField('Tác giả', max_length=100, default='ADCARE Việt Nam')
-    status = models.CharField('Trạng thái', max_length=20, choices=STATUS_CHOICES, default='draft')
+    status = models.CharField('Trạng thái', max_length=20, choices=STATUS_CHOICES, default='draft', db_index=True)
     is_featured = models.BooleanField('Nổi bật', default=False)
     view_count = models.PositiveIntegerField('Lượt xem', default=0)
-    published_at = models.DateTimeField('Ngày đăng', null=True, blank=True)
+    published_at = models.DateTimeField('Ngày đăng', null=True, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     meta_title = models.CharField('Meta Title', max_length=200, blank=True)

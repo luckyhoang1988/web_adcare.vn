@@ -197,9 +197,7 @@
     <div class="row g-4">
       {% for service in featured_services %}
       <div class="col-lg-4 col-md-6">
-        <div style="background:rgba(255,255,255,0.05);border-radius:var(--radius-lg);overflow:hidden;transition:var(--transition);border:1px solid rgba(255,255,255,0.08);"
-             onmouseover="this.style.background='rgba(255,255,255,0.1)'"
-             onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+        <div class="service-card-inner">
           {% if service.image %}
           <picture>
             <source media="(max-width: 575px)" srcset="{{ service.image_mobile.url }}">
