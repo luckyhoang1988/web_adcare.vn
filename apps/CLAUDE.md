@@ -27,9 +27,11 @@ Mọi model có `image` (ResizedImageField) phải có thêm `image_mobile` (Ima
 
 ### Admin
 - **LUÔN** kế thừa `DuplicateMixin` từ `apps/core/admin_utils.py`
+- **Nếu model feed vào `global_nav`** (Category, Menu, SiteConfig, Service…) → kế thừa thêm `ClearMenuCacheMixin` (đặt trước `DuplicateMixin` trong MRO)
 - `list_editable` phải bao gồm `is_active` và `order`
 - `copy_link` trong `list_display` (từ DuplicateMixin)
 - `prepopulated_fields = {'slug': ('name',)}` hoặc `('title',)`
+- `list_per_page = 25` cho admin nội dung nhiều bản ghi
 
 ### Migrations
 - Chạy ngay sau khi sửa model: `python manage.py makemigrations && python manage.py migrate`
@@ -59,5 +61,6 @@ paginate_by = 9  # LUÔN dùng 9
 ## Context Processor
 Khi cần inject data mới vào mọi template (menu, footer, v.v.):
 - Sửa `apps/core/context_processors.py`
-- Cache cùng với `site_config_data` (3600s)
-- Xóa cache sau khi sửa: `python manage.py shell -c "from django.core.cache import cache; cache.clear()"`
+- Data gói trong 1 cache key `global_nav` (TTL **86400s = 24h**)
+- **Nếu data mới đến từ model sửa được trong admin** → ModelAdmin tương ứng phải dùng `ClearMenuCacheMixin` để xóa `global_nav` (nếu không, thay đổi không hiện ra tới 24h)
+- Xóa cache thủ công: `python manage.py shell -c "from django.core.cache import cache; cache.clear()"`
