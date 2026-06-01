@@ -190,10 +190,10 @@ JAZZMIN_SETTINGS = {
     'site_logo': None,
     'welcome_sign': 'Chào mừng đến ADCARE Admin',
     'search_model': [
-        'apps.products.product',
-        'apps.services.service',
-        'apps.news.article',
-        'apps.projects.project',
+        'products.product',
+        'services.service',
+        'news.article',
+        'projects.project',
         'auth.user',
     ],
     'topmenu_links': [

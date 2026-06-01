@@ -1,9 +1,26 @@
 from django import forms
 from django.contrib import admin
-from django.utils.html import mark_safe
+from django.core.cache import cache
+from django.db.models import Count, Prefetch
+from django.urls import reverse, NoReverseMatch
+from django.utils.html import format_html, mark_safe
 from ckeditor.widgets import CKEditorWidget
 from .models import SiteConfig, Slider, StatItem, AboutSection, AboutFeature, MenuItem
 from .admin_utils import DuplicateMixin, ClearMenuCacheMixin, make_duplicate_action
+
+# Loại menu tự sinh dropdown danh mục/mục con — không cần thêm menu con thủ công.
+AUTO_DROPDOWN_TYPES = {'products', 'services', 'about', 'projects', 'news'}
+
+# Ánh xạ loại menu → tên URL để dựng link "Xem trên web".
+ITEM_TYPE_URL_NAMES = {
+    'home': 'home',
+    'about': 'about',
+    'products': 'product_list',
+    'services': 'service_list',
+    'projects': 'project_list',
+    'news': 'news_list',
+    'contact': 'contact',
+}
 
 
 class AboutSectionForm(forms.ModelForm):
@@ -168,34 +185,120 @@ class AboutSectionAdmin(ClearMenuCacheMixin, admin.ModelAdmin):
 class MenuSubItemInline(admin.TabularInline):
     model = MenuItem
     fk_name = 'parent'
-    extra = 2
+    extra = 1
     fields = ('title', 'url', 'icon', 'description', 'order', 'is_active', 'open_in_new_tab')
     verbose_name = 'Menu con'
-    verbose_name_plural = 'Danh sách menu con (dropdown)'
+    verbose_name_plural = 'Menu con (dropdown) — mỗi dòng là 1 mục trong dropdown'
+
+
+def clear_menu_cache_action(modeladmin, request, queryset):
+    cache.delete('global_nav')
+    modeladmin.message_user(request, 'Đã làm mới menu — thay đổi đã hiển thị ngoài website.')
+clear_menu_cache_action.short_description = '🔄 Làm mới menu ra website (xóa cache)'
 
 
 @admin.register(MenuItem)
-class MenuItemAdmin(DuplicateMixin, admin.ModelAdmin):
-    list_display = ('display_title', 'item_type', 'dropdown_style', 'url', 'order', 'is_active', 'copy_link')
+class MenuItemAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin):
+    list_display = ('title_tree', 'type_badge', 'submenu_info', 'link_target',
+                    'order', 'is_active', 'onsite_link', 'copy_link')
     list_editable = ('order', 'is_active')
-    list_display_links = ('display_title',)
+    list_display_links = ('title_tree',)
     list_per_page = 25
+    list_filter = ('is_active', 'item_type')
+    search_fields = ('title', 'url')
     ordering = ('order',)
     inlines = [MenuSubItemInline]
-    actions = [make_duplicate_action('menu')]
+    actions = [clear_menu_cache_action, make_duplicate_action('menu')]
     fieldsets = (
-        ('Thông tin cơ bản', {
-            'fields': ('title', 'item_type', 'url', 'order', 'is_active', 'open_in_new_tab')
+        ('1. Thông tin cơ bản', {
+            'fields': ('title', 'item_type', 'url', 'icon'),
+            'description': (
+                'Chọn <b>Loại trang</b> để menu trỏ tới trang có sẵn (Trang chủ, Sản phẩm, Dịch vụ…). '
+                'Các loại <b>Sản phẩm, Dịch vụ, Về chúng tôi, Dự án, Tin tức</b> sẽ <b>tự sinh dropdown danh mục</b> '
+                '— không cần thêm menu con. Chọn <b>Link tùy chỉnh</b> rồi điền <b>URL</b> để trỏ tới địa chỉ bất kỳ.'
+            )
         }),
-        ('Kiểu dropdown (khi có menu con)', {
-            'fields': ('dropdown_style', 'icon', 'description'),
-            'description': 'Cấu hình giao diện dropdown. Thêm menu con bên dưới.'
+        ('2. Hiển thị & thứ tự', {
+            'fields': ('order', 'is_active', 'open_in_new_tab'),
+            'description': 'Số <b>Thứ tự</b> nhỏ hiển thị trước. Bỏ tích <b>Hiển thị</b> để ẩn tạm khỏi navbar.'
+        }),
+        ('3. Dropdown tùy chỉnh (khi tự thêm menu con bên dưới)', {
+            'fields': ('dropdown_style', 'description'),
+            'classes': ('collapse',),
+            'description': (
+                'Chỉ dùng khi bạn tự thêm <b>Menu con</b> ở khung bên dưới (cho "Link tùy chỉnh"). '
+                '<b>Danh sách</b>: cột dọc đơn giản · <b>Lưới</b>: 2 cột có icon · <b>Mega</b>: 2 cột có icon + mô tả.'
+            )
         }),
     )
 
     def get_queryset(self, request):
-        return super().get_queryset(request).filter(parent=None)
+        # Chỉ hiện menu cấp 1; kèm số lượng + danh sách menu con để tránh N+1.
+        children_qs = MenuItem.objects.order_by('order')
+        return (super().get_queryset(request)
+                .filter(parent=None)
+                .annotate(_submenu_count=Count('children'))
+                .prefetch_related(Prefetch('children', queryset=children_qs)))
 
-    def display_title(self, obj):
-        return obj.title
-    display_title.short_description = 'Tên menu'
+    @admin.display(description='Tên menu', ordering='title')
+    def title_tree(self, obj):
+        icon = format_html('<i class="{}" style="color:#7db833;margin-right:6px;"></i>', obj.icon) if obj.icon else ''
+        return format_html('{}<b>{}</b>', icon, obj.title)
+
+    @admin.display(description='Loại')
+    def type_badge(self, obj):
+        label = obj.get_item_type_display()
+        if obj.item_type in AUTO_DROPDOWN_TYPES:
+            color, note = '#17a2b8', ' ▾ tự sinh dropdown'
+        elif obj.item_type == 'custom':
+            color, note = '#6c757d', ''
+        else:
+            color, note = '#28a745', ''
+        return format_html(
+            '<span style="background:{};color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;">{}{}</span>',
+            color, label, note,
+        )
+
+    @admin.display(description='Menu con')
+    def submenu_info(self, obj):
+        count = getattr(obj, '_submenu_count', 0)
+        if not count:
+            if obj.item_type in AUTO_DROPDOWN_TYPES:
+                return mark_safe('<span style="color:#17a2b8;font-size:12px;">(tự động)</span>')
+            return mark_safe('<span style="color:#ccc;">—</span>')
+        names = ', '.join(c.title for c in obj.children.all()[:4])
+        if count > 4:
+            names += '…'
+        return format_html(
+            '<span style="font-size:12px;"><b>{}</b> mục: <span style="color:#666;">{}</span></span>',
+            count, names,
+        )
+
+    @admin.display(description='Trỏ tới')
+    def link_target(self, obj):
+        url = self._resolve_url(obj)
+        if url:
+            return format_html('<code style="font-size:11px;color:#0a7;">{}</code>', url)
+        return mark_safe('<span style="color:#dc3545;font-size:11px;">chưa có URL</span>')
+
+    @admin.display(description='Web')
+    def onsite_link(self, obj):
+        url = self._resolve_url(obj)
+        if not url:
+            return mark_safe('<span style="color:#ccc;"><i class="fas fa-eye-slash"></i></span>')
+        return format_html(
+            '<a href="{}" target="_blank" title="Xem trên website" '
+            'style="color:#28a745;font-size:15px;"><i class="fas fa-external-link-alt"></i></a>', url,
+        )
+
+    @staticmethod
+    def _resolve_url(obj):
+        if obj.item_type == 'custom':
+            return obj.url or ''
+        name = ITEM_TYPE_URL_NAMES.get(obj.item_type)
+        if not name:
+            return obj.url or ''
+        try:
+            return reverse(name)
+        except NoReverseMatch:
+            return obj.url or ''
