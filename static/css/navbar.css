@@ -88,13 +88,13 @@
 .navbar-nav .dropdown-item.has-children {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
 }
 .navbar-nav .submenu-arrow {
   font-size: 10px;
   opacity: 0.55;
   flex-shrink: 0;
+  margin-left: auto;   /* đẩy mũi tên sang phải, chữ vẫn sát icon bên trái */
 }
 
 /* Desktop: hover to open with animation */
