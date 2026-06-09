@@ -55,7 +55,7 @@
             <li class="nav-item dropdown{% if '/san-pham/' in path %} active{% endif %}">
               <a class="nav-link dropdown-toggle" href="{% url 'product_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'product_list' %}">Tất cả sản phẩm</a></li>
+                <li><a class="dropdown-item" href="{% url 'product_list' %}"><i class="fas fa-border-all me-2" style="width:16px;text-align:center;color:var(--accent);"></i>Tất cả sản phẩm</a></li>
                 {% if nav_categories %}
                 <li><hr class="dropdown-divider" style="border-color:rgba(255,255,255,0.1);margin:4px 0;"></li>
                 {% include 'components/_category_submenu.html' with items=nav_categories %}
@@ -68,7 +68,7 @@
             <li class="nav-item dropdown{% if '/dich-vu/' in path %} active{% endif %}">
               <a class="nav-link dropdown-toggle" href="{% url 'service_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'service_list' %}">Tất cả dịch vụ</a></li>
+                <li><a class="dropdown-item" href="{% url 'service_list' %}"><i class="fas fa-border-all me-2" style="width:16px;text-align:center;color:var(--accent);"></i>Tất cả dịch vụ</a></li>
                 {% if nav_service_categories %}
                 <li><hr class="dropdown-divider"></li>
                 {% include 'components/_category_submenu.html' with items=nav_service_categories %}
@@ -81,7 +81,7 @@
             <li class="nav-item dropdown{% if '/giai-phap/' in path %} active{% endif %}">
               <a class="nav-link dropdown-toggle" href="{% url 'solution_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'solution_list' %}">Tất cả giải pháp</a></li>
+                <li><a class="dropdown-item" href="{% url 'solution_list' %}"><i class="fas fa-border-all me-2" style="width:16px;text-align:center;color:var(--accent);"></i>Tất cả giải pháp</a></li>
                 {% if nav_solution_categories %}
                 <li><hr class="dropdown-divider"></li>
                 {% include 'components/_category_submenu.html' with items=nav_solution_categories %}
@@ -111,7 +111,7 @@
             <li class="nav-item dropdown{% if '/du-an/' in path %} active{% endif %}">
               <a class="nav-link dropdown-toggle" href="{% url 'project_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
               <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{% url 'project_list' %}">Tất cả dự án</a></li>
+                <li><a class="dropdown-item" href="{% url 'project_list' %}"><i class="fas fa-border-all me-2" style="width:16px;text-align:center;color:var(--accent);"></i>Tất cả dự án</a></li>
                 <li><hr class="dropdown-divider" style="border-color:rgba(255,255,255,0.1);margin:4px 0;"></li>
                 {% for cat in nav_project_categories %}
                 <li>
@@ -229,7 +229,7 @@
           <li class="nav-item dropdown{% if '/san-pham/' in path %} active{% endif %}">
             <a class="nav-link dropdown-toggle" href="{% url 'product_list' %}" data-bs-toggle="dropdown">Sản phẩm</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="{% url 'product_list' %}">Tất cả sản phẩm</a></li>
+              <li><a class="dropdown-item" href="{% url 'product_list' %}"><i class="fas fa-border-all me-2" style="width:16px;text-align:center;color:var(--accent);"></i>Tất cả sản phẩm</a></li>
               {% include 'components/_category_submenu.html' with items=nav_categories %}
             </ul>
           </li>
@@ -237,7 +237,7 @@
           <li class="nav-item dropdown{% if '/giai-phap/' in path %} active{% endif %}">
             <a class="nav-link dropdown-toggle" href="{% url 'solution_list' %}" data-bs-toggle="dropdown">Giải pháp</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="{% url 'solution_list' %}">Tất cả giải pháp</a></li>
+              <li><a class="dropdown-item" href="{% url 'solution_list' %}"><i class="fas fa-border-all me-2" style="width:16px;text-align:center;color:var(--accent);"></i>Tất cả giải pháp</a></li>
               {% include 'components/_category_submenu.html' with items=nav_solution_categories %}
             </ul>
           </li>
