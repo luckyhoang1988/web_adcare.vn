@@ -1,0 +1,23 @@
+{% comment %}
+Đệ quy render cây danh mục cho sidebar trang sản phẩm.
+Yêu cầu: `items` (list node có .children_list), `current_category`.
+Cấp con thụt lề qua padding-left của <ul> lồng.
+{% endcomment %}
+{% for cat in items %}
+{% if current_category.pk == cat.pk %}{% comment %}active{% endcomment %}{% endif %}
+<li>
+  <a href="{{ cat.get_absolute_url }}"
+     style="display:block;padding:10px 20px;font-size:13.5px;color:{% if current_category.pk == cat.pk %}var(--accent){% else %}var(--text){% endif %};font-weight:{% if current_category.pk == cat.pk %}600{% else %}400{% endif %};border-left:3px solid {% if current_category.pk == cat.pk %}var(--accent){% else %}transparent{% endif %};transition:all 0.2s;"
+     onmouseover="this.style.background='var(--light)'"
+     onmouseout="this.style.background='transparent'">
+    {% if cat.icon %}<i class="{{ cat.icon }} me-2" style="color:var(--navy-light);width:16px;"></i>{% endif %}
+    {{ cat.name }}
+    <span style="float:right;font-size:11px;color:var(--text-muted);">({{ cat.products.count }})</span>
+  </a>
+  {% if cat.children_list %}
+  <ul style="list-style:none;padding:0 0 0 16px;margin:0;">
+    {% include 'products/_cat_tree.html' with items=cat.children_list current_category=current_category %}
+  </ul>
+  {% endif %}
+</li>
+{% endfor %}

@@ -1,0 +1,20 @@
+{% comment %}
+Đệ quy render cây danh mục (sản phẩm/dịch vụ) trong dropdown navbar.
+Yêu cầu: `items` = list danh mục, mỗi node có .children_list (gắn bởi build_category_tree)
+và .get_absolute_url. Node có con → class .dropdown-submenu + <ul> lồng
+(flyout trên desktop, thụt lề trên mobile).
+{% endcomment %}
+{% for cat in items %}
+<li class="{% if cat.children_list %}dropdown-submenu{% endif %}">
+  <a class="dropdown-item{% if cat.children_list %} has-children{% endif %}{% if cat.slug in path %} active{% endif %}" href="{{ cat.get_absolute_url }}">
+    {% if cat.icon %}<i class="{{ cat.icon }} me-2" style="width:16px;text-align:center;color:var(--accent);"></i>{% endif %}
+    {{ cat.name }}
+    {% if cat.children_list %}<i class="fas fa-chevron-right submenu-arrow"></i>{% endif %}
+  </a>
+  {% if cat.children_list %}
+  <ul class="dropdown-menu">
+    {% include 'components/_category_submenu.html' with items=cat.children_list %}
+  </ul>
+  {% endif %}
+</li>
+{% endfor %}

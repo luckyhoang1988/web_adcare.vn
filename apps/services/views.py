@@ -2,6 +2,7 @@ from django.views.generic import ListView, DetailView
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from .models import Service, ServiceCategory
+from apps.core.models import collect_descendant_ids
 
 
 class ServiceListView(ListView):
@@ -15,7 +16,9 @@ class ServiceListView(ListView):
         slug = self.request.GET.get('danh-muc')
         if slug:
             self.current_category = get_object_or_404(ServiceCategory, slug=slug, is_active=True)
-            qs = qs.filter(category=self.current_category)
+            all_cats = list(ServiceCategory.objects.filter(is_active=True))
+            ids = collect_descendant_ids(self.current_category, all_cats)
+            qs = qs.filter(category_id__in=ids)
         return qs
 
     def get_context_data(self, **kwargs):
@@ -44,7 +47,9 @@ class ServiceDetailView(DetailView):
         cat = self.object.category
         crumbs = [{'name': 'Dịch vụ', 'url': reverse('service_list')}]
         if cat:
-            crumbs.append({'name': cat.name, 'url': f"{reverse('service_list')}?danh-muc={cat.slug}"})
+            for anc in cat.get_ancestors():
+                crumbs.append({'name': anc.name, 'url': anc.get_absolute_url()})
+            crumbs.append({'name': cat.name, 'url': cat.get_absolute_url()})
         crumbs.append({'name': self.object.name, 'url': None})
         ctx['breadcrumbs'] = crumbs
         return ctx

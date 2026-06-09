@@ -58,14 +58,7 @@
                 <li><a class="dropdown-item" href="{% url 'product_list' %}">Tất cả sản phẩm</a></li>
                 {% if nav_categories %}
                 <li><hr class="dropdown-divider" style="border-color:rgba(255,255,255,0.1);margin:4px 0;"></li>
-                {% for cat in nav_categories %}
-                <li>
-                  <a class="dropdown-item{% if cat.slug in path %} active{% endif %}" href="{{ cat.get_absolute_url }}">
-                    {% if cat.icon %}<i class="{{ cat.icon }} me-2" style="width:16px;text-align:center;color:var(--accent);"></i>{% endif %}
-                    {{ cat.name }}
-                  </a>
-                </li>
-                {% endfor %}
+                {% include 'components/_category_submenu.html' with items=nav_categories %}
                 {% endif %}
               </ul>
             </li>
@@ -78,14 +71,7 @@
                 <li><a class="dropdown-item" href="{% url 'service_list' %}">Tất cả dịch vụ</a></li>
                 {% if nav_service_categories %}
                 <li><hr class="dropdown-divider"></li>
-                {% for cat in nav_service_categories %}
-                <li>
-                  <a class="dropdown-item{% if cat.slug in path %} active{% endif %}" href="{% url 'service_list' %}?danh-muc={{ cat.slug }}">
-                    {% if cat.icon %}<i class="{{ cat.icon }} me-2" style="width:16px;text-align:center;color:var(--accent);"></i>{% endif %}
-                    {{ cat.name }}
-                  </a>
-                </li>
-                {% endfor %}
+                {% include 'components/_category_submenu.html' with items=nav_service_categories %}
                 {% endif %}
               </ul>
             </li>
@@ -231,7 +217,7 @@
             <a class="nav-link dropdown-toggle" href="{% url 'product_list' %}" data-bs-toggle="dropdown">Sản phẩm</a>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="{% url 'product_list' %}">Tất cả sản phẩm</a></li>
-              {% for cat in nav_categories %}<li><a class="dropdown-item" href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>{% endfor %}
+              {% include 'components/_category_submenu.html' with items=nav_categories %}
             </ul>
           </li>
           <li class="nav-item{% if '/dich-vu/' in path %} active{% endif %}"><a class="nav-link" href="{% url 'service_list' %}">Dịch vụ</a></li>

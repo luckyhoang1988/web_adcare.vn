@@ -55,6 +55,33 @@ def unique_slugify(instance, value, slug_field='slug'):
     return slug
 
 
+def build_category_tree(categories):
+    """Gắn .children_list cho mỗi node; trả về list node gốc (parent=None).
+
+    Tiện ích cây cha–con dùng chung cho mọi model danh mục có self-FK `parent`.
+    `categories` là list đã load sẵn (1 query) — không gây N+1.
+    """
+    by_parent = {}
+    for c in categories:
+        by_parent.setdefault(c.parent_id, []).append(c)
+    for c in categories:
+        c.children_list = by_parent.get(c.pk, [])
+    return by_parent.get(None, [])
+
+
+def collect_descendant_ids(category, categories):
+    """pk của `category` + toàn bộ con cháu (dựa trên list đã load sẵn)."""
+    by_parent = {}
+    for c in categories:
+        by_parent.setdefault(c.parent_id, []).append(c)
+    ids, stack = [category.pk], [category.pk]
+    while stack:
+        for child in by_parent.get(stack.pop(), []):
+            ids.append(child.pk)
+            stack.append(child.pk)
+    return ids
+
+
 class SiteConfig(models.Model):
     company_name = models.CharField('Tên công ty', max_length=200, default='ADCARE Việt Nam')
     company_name_en = models.CharField('Tên tiếng Anh', max_length=200, blank=True)

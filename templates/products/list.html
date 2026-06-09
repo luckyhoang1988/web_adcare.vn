@@ -21,7 +21,7 @@
         <a href="{% url 'product_list' %}" class="mobile-cat-chip {% if not current_category %}active{% endif %}">
           Tất cả
         </a>
-        {% for cat in categories %}
+        {% for cat in categories_flat %}
         <a href="{{ cat.get_absolute_url }}" class="mobile-cat-chip {% if current_category.pk == cat.pk %}active{% endif %}">
           {% if cat.icon %}<i class="{{ cat.icon }} me-1"></i>{% endif %}{{ cat.name }}
         </a>
@@ -44,18 +44,7 @@
                 Tất cả sản phẩm
               </a>
             </li>
-            {% for cat in categories %}
-            <li>
-              <a href="{{ cat.get_absolute_url }}"
-                 style="display:block;padding:10px 20px;font-size:13.5px;color:{% if current_category.pk == cat.pk %}var(--accent){% else %}var(--text){% endif %};font-weight:{% if current_category.pk == cat.pk %}600{% else %}400{% endif %};border-left:3px solid {% if current_category.pk == cat.pk %}var(--accent){% else %}transparent{% endif %};transition:all 0.2s;"
-                 onmouseover="this.style.background='var(--light)'"
-                 onmouseout="this.style.background='transparent'">
-                {% if cat.icon %}<i class="{{ cat.icon }} me-2" style="color:var(--navy-light);width:16px;"></i>{% endif %}
-                {{ cat.name }}
-                <span style="float:right;font-size:11px;color:var(--text-muted);">({{ cat.products.count }})</span>
-              </a>
-            </li>
-            {% endfor %}
+            {% include 'products/_cat_tree.html' with items=categories current_category=current_category %}
           </ul>
         </div>
       </div>

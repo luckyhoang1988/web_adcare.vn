@@ -82,6 +82,20 @@
 }
 .dropdown-divider { border-color: #eee; }
 
+/* Submenu cha–con (flyout): node có danh mục con */
+.navbar-nav .dropdown-submenu { position: relative; }
+.navbar-nav .dropdown-item.has-children {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.navbar-nav .submenu-arrow {
+  font-size: 10px;
+  opacity: 0.55;
+  flex-shrink: 0;
+}
+
 /* Desktop: hover to open with animation */
 @media (min-width: 992px) {
   .navbar-nav .dropdown-menu {
@@ -96,6 +110,22 @@
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
+    pointer-events: auto;
+  }
+  /* Submenu con: bật ra bên phải khi hover node cha */
+  .navbar-nav .dropdown-submenu > .dropdown-menu {
+    top: -8px;
+    left: 100%;
+    margin: 0;
+    border-top: none;
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    transform: translateX(8px);
+  }
+  .navbar-nav .dropdown-submenu:hover > .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
     pointer-events: auto;
   }
 }
@@ -156,6 +186,19 @@
     font-size: 13px;
     color: var(--text);
   }
+  /* Submenu con: hiển thị thụt lề tĩnh thay vì flyout (không hover được trên mobile) */
+  .navbar-nav .dropdown-submenu > .dropdown-menu {
+    display: block;
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+    margin: 0 0 0 14px;
+    border-left: 2px solid var(--accent);
+    box-shadow: none;
+  }
+  .navbar-nav .submenu-arrow { transform: rotate(90deg); }
 }
 
 @media (max-width: 575px) {

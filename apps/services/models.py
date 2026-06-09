@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django_resized import ResizedImageField
@@ -9,6 +10,11 @@ from apps.core.models import unique_slugify
 class ServiceCategory(models.Model):
     name = models.CharField('Tên danh mục', max_length=200)
     slug = models.SlugField('Slug', unique=True, blank=True)
+    parent = models.ForeignKey(
+        'self', null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='children', verbose_name='Danh mục cha',
+        help_text='Để trống = danh mục cấp 1. Chọn danh mục khác để biến mục này thành con.'
+    )
     description = models.TextField('Mô tả', blank=True)
     icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True)
     image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='services/categories/', blank=True, quality=85)
@@ -27,6 +33,25 @@ class ServiceCategory(models.Model):
         if not self.slug and self.name:
             self.slug = unique_slugify(self, self.name)
         super().save(*args, **kwargs)
+
+    def clean(self):
+        # Chống tự làm cha của mình + chống vòng lặp (đa cấp)
+        node = self.parent
+        while node is not None:
+            if node.pk == self.pk:
+                raise ValidationError({'parent': 'Không thể tạo vòng lặp danh mục cha–con.'})
+            node = node.parent
+
+    def get_ancestors(self):
+        """Chuỗi tổ tiên gốc → cha trực tiếp (cho breadcrumb)."""
+        chain, node = [], self.parent
+        while node is not None:
+            chain.append(node)
+            node = node.parent
+        return list(reversed(chain))
+
+    def get_absolute_url(self):
+        return reverse('service_list') + f'?danh-muc={self.slug}'
 
     def __str__(self):
         return self.name

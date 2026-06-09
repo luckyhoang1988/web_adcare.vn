@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
-from .models import ProductCategory, Product, ProductImage
+from .models import ProductCategory, Product, ProductImage, collect_descendant_ids
 from apps.core.admin_utils import ClearMenuCacheMixin, DuplicateMixin, make_duplicate_action
 
 
@@ -22,11 +22,29 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(ProductCategory)
 class ProductCategoryAdmin(ClearMenuCacheMixin, DuplicateMixin, admin.ModelAdmin):
-    list_display = ('name', 'slug', 'order', 'is_active', 'show_in_menu', 'copy_link')
+    list_display = ('tree_name', 'parent', 'slug', 'order', 'is_active', 'show_in_menu', 'copy_link')
     list_editable = ('order', 'is_active', 'show_in_menu')
-    list_display_links = ('name',)
+    list_display_links = ('tree_name',)
+    list_filter = ('parent', 'is_active', 'show_in_menu')
     search_fields = ('name',)
     actions = [make_duplicate_action('danh mục')]
+
+    def tree_name(self, obj):
+        depth = len(obj.get_ancestors())
+        prefix = '— ' * depth
+        return mark_safe(f'{prefix}{obj.name}')
+    tree_name.short_description = 'Tên danh mục'
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'parent':
+            obj_id = request.resolver_match.kwargs.get('object_id')
+            if obj_id:
+                obj = ProductCategory.objects.filter(pk=obj_id).first()
+                if obj:
+                    all_cats = list(ProductCategory.objects.all())
+                    exclude_ids = collect_descendant_ids(obj, all_cats)
+                    kwargs['queryset'] = ProductCategory.objects.exclude(pk__in=exclude_ids)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 @admin.register(Product)
