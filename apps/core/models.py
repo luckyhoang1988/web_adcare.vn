@@ -38,6 +38,23 @@ def vi_slugify(text):
     return slugify(text)
 
 
+def unique_slugify(instance, value, slug_field='slug'):
+    """Sinh slug ASCII duy nhất cho `instance` từ `value`.
+
+    - Dùng vi_slugify (tiếng Việt có dấu → ASCII sạch).
+    - Fallback khi rỗng (emoji/CJK/ký tự lạ): dùng tên model → tránh slug '' gây 404.
+    - Lặp -2, -3, ... cho tới khi không trùng (loại trừ chính bản ghi này).
+    """
+    base = vi_slugify(value) or instance._meta.model_name
+    Model = instance.__class__
+    slug = base
+    i = 2
+    while Model.objects.filter(**{slug_field: slug}).exclude(pk=instance.pk).exists():
+        slug = f'{base}-{i}'
+        i += 1
+    return slug
+
+
 class SiteConfig(models.Model):
     company_name = models.CharField('Tên công ty', max_length=200, default='ADCARE Việt Nam')
     company_name_en = models.CharField('Tên tiếng Anh', max_length=200, blank=True)
@@ -181,13 +198,7 @@ class AboutSection(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug and self.title:
-            base = vi_slugify(self.title)
-            slug = base
-            counter = 2
-            while AboutSection.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                slug = f'{base}-{counter}'
-                counter += 1
-            self.slug = slug
+            self.slug = unique_slugify(self, self.title)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

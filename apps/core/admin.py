@@ -94,7 +94,6 @@ class AboutSectionAdmin(ClearMenuCacheMixin, admin.ModelAdmin):
     list_display = ('title', 'page_url_display', 'show_in_menu', 'menu_status', 'is_active', 'preview_link', 'updated_at')
     list_editable = ('show_in_menu', 'is_active')
     list_display_links = ('title',)
-    prepopulated_fields = {'slug': ('title',)}
     inlines = [AboutFeatureInline]
     fieldsets = (
         ('Nội dung', {

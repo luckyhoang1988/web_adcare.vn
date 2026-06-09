@@ -3,7 +3,7 @@ from django.urls import reverse
 from django_resized import ResizedImageField
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFit
-from apps.core.models import vi_slugify
+from apps.core.models import unique_slugify
 
 
 class ServiceCategory(models.Model):
@@ -25,11 +25,7 @@ class ServiceCategory(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug and self.name:
-            base = vi_slugify(self.name)
-            slug = base; i = 2
-            while ServiceCategory.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                slug = f'{base}-{i}'; i += 1
-            self.slug = slug
+            self.slug = unique_slugify(self, self.name)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -61,11 +57,7 @@ class Service(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug and self.name:
-            base = vi_slugify(self.name)
-            slug = base; i = 2
-            while Service.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                slug = f'{base}-{i}'; i += 1
-            self.slug = slug
+            self.slug = unique_slugify(self, self.name)
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
