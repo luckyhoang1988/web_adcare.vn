@@ -57,7 +57,12 @@ KEYWORD_ICONS = [
     ('thiet-bi-mang', 'fas fa-network-wired'),
     ('switch', 'fas fa-network-wired'),
     ('router', 'fas fa-network-wired'),
+    ('access-point', 'fas fa-wifi'),
     ('wifi', 'fas fa-wifi'),
+    ('firewall', 'fas fa-shield-halved'),      # firewall / tường lửa
+    ('bao-mat', 'fas fa-shield-halved'),       # thiết bị bảo mật
+    ('module', 'fas fa-network-wired'),        # module quang / SFP
+    ('sfp', 'fas fa-network-wired'),
     ('mang', 'fas fa-network-wired'),          # mạng
     ('cap', 'fas fa-ethernet'),                # cáp
     # --- Nhà thông minh ---
@@ -79,15 +84,25 @@ KEYWORD_ICONS = [
     ('dao-tao', 'fas fa-graduation-cap'),      # đào tạo
     ('cho-thue', 'fas fa-handshake'),          # cho thuê
     ('giai-phap', 'fas fa-lightbulb'),         # giải pháp
-    # --- Phụ kiện / khác ---
-    ('phu-kien', 'fas fa-plug'),               # phụ kiện
-    ('cong-cu', 'fas fa-screwdriver-wrench'),
+    # --- Thiết bị ngoại vi / văn phòng ---
+    ('ban-phim', 'fas fa-keyboard'),           # bàn phím, chuột
+    ('chuot', 'fas fa-computer-mouse'),
+    ('chuyen-doi', 'fas fa-right-left'),       # bộ chuyển đổi / converter
     ('man-hinh', 'fas fa-display'),            # màn hình
     ('tivi', 'fas fa-tv'),
     ('loa', 'fas fa-volume-high'),             # loa
     ('micro', 'fas fa-microphone'),
     ('amply', 'fas fa-volume-high'),
     ('the-nho', 'fas fa-sd-card'),             # thẻ nhớ
+    ('van-phong', 'fas fa-print'),             # thiết bị văn phòng
+    # --- Dự án / khách hàng (đặt cuối — ưu tiên token cụ thể ở trên) ---
+    ('mo-hinh', 'fas fa-sitemap'),             # theo mô hình khách hàng
+    ('khach-hang', 'fas fa-users'),
+    ('trien-khai', 'fas fa-diagram-project'),  # dự án đã triển khai
+    ('du-an', 'fas fa-diagram-project'),
+    # --- Phụ kiện / chung ---
+    ('phu-kien', 'fas fa-plug'),               # phụ kiện
+    ('cong-cu', 'fas fa-screwdriver-wrench'),
 ]
 
 DEFAULT_ICON = 'fas fa-box'
