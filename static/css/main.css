@@ -565,3 +565,58 @@ img { max-width: 100%; height: auto; }
   padding-top: 40px;
   border-top: 1px solid var(--border);
 }
+
+/* ==============================
+   Sidebar cây danh mục (thu/sổ)
+   ============================== */
+.cat-tree,
+.cat-tree ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cat-tree__children { padding-left: 14px; display: none; }
+.cat-tree__item.is-open > .cat-tree__children { display: block; }
+
+.cat-tree__row {
+  display: flex;
+  align-items: stretch;
+  border-left: 3px solid transparent;
+  transition: background 0.2s;
+}
+.cat-tree__row:hover { background: var(--light); }
+.cat-tree__item > .cat-tree__row:has(.is-active) { border-left-color: var(--accent); }
+
+.cat-tree__link {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 8px 10px 17px;
+  font-size: 13.5px;
+  color: var(--text);
+  min-width: 0;
+}
+.cat-tree__link.is-active { color: var(--accent); font-weight: 600; }
+.cat-tree__icon { color: var(--navy-light); width: 16px; text-align: center; flex-shrink: 0; }
+.cat-tree__name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cat-tree__count { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+
+.cat-tree__toggle {
+  flex-shrink: 0;
+  width: 38px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  transition: color 0.2s;
+}
+.cat-tree__toggle:hover { color: var(--accent); }
+.cat-tree__toggle i { transition: transform 0.25s ease; }
+.cat-tree__item.is-open > .cat-tree__row .cat-tree__toggle i { transform: rotate(180deg); }

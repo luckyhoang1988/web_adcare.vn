@@ -37,14 +37,17 @@
           <div style="background:var(--navy);color:#fff;padding:14px 20px;font-weight:600;">
             <i class="fas fa-th-large me-2" style="color:var(--accent);"></i>Danh mục sản phẩm
           </div>
-          <ul style="list-style:none;padding:12px 0;margin:0;">
-            <li>
-              <a href="{% url 'product_list' %}"
-                 style="display:block;padding:10px 20px;font-size:13.5px;color:{% if not current_category %}var(--accent){% else %}var(--text){% endif %};font-weight:{% if not current_category %}600{% else %}400{% endif %};border-left:3px solid {% if not current_category %}var(--accent){% else %}transparent{% endif %};">
-                Tất cả sản phẩm
-              </a>
+          <ul class="cat-tree" style="padding:10px 0;">
+            <li class="cat-tree__item">
+              <div class="cat-tree__row">
+                <a href="{% url 'product_list' %}"
+                   class="cat-tree__link{% if not current_category %} is-active{% endif %}">
+                  <i class="fas fa-border-all cat-tree__icon"></i>
+                  <span class="cat-tree__name">Tất cả sản phẩm</span>
+                </a>
+              </div>
             </li>
-            {% include 'products/_cat_tree.html' with items=categories current_category=current_category %}
+            {% include 'products/_cat_tree.html' with items=categories current_category=current_category open_category_ids=open_category_ids %}
           </ul>
         </div>
       </div>
@@ -91,4 +94,16 @@
     </div>
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.cat-tree__toggle').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var item = this.closest('.cat-tree__item');
+    var open = item.classList.toggle('is-open');
+    this.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+});
+</script>
 {% endblock %}

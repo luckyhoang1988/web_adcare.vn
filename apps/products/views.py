@@ -25,6 +25,7 @@ class ProductListView(ListView):
         ctx['categories'], ctx['categories_flat'] = _category_context()
         ctx['page_title'] = 'Sản phẩm'
         ctx['pagination_base_url'] = '?'
+        ctx['open_category_ids'] = set()
         return ctx
 
 
@@ -45,8 +46,10 @@ class ProductCategoryView(ListView):
         ctx['current_category'] = self.category
         ctx['page_title'] = self.category.name
         ctx['pagination_base_url'] = '?'
+        ancestors = self.category.get_ancestors()
+        ctx['open_category_ids'] = {c.pk for c in ancestors} | {self.category.pk}
         crumbs = [{'name': 'Sản phẩm', 'url': reverse('product_list')}]
-        for anc in self.category.get_ancestors():
+        for anc in ancestors:
             crumbs.append({'name': anc.name, 'url': anc.get_absolute_url()})
         crumbs.append({'name': self.category.name, 'url': None})
         ctx['breadcrumbs'] = crumbs

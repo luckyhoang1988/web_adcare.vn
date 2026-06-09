@@ -1,22 +1,27 @@
 {% comment %}
 Đệ quy render cây danh mục cho sidebar trang sản phẩm.
-Yêu cầu: `items` (list node có .children_list), `current_category`.
-Cấp con thụt lề qua padding-left của <ul> lồng.
+Yêu cầu: `items` (list node có .children_list), `current_category`, `open_category_ids` (set pk các nhánh mở sẵn).
+Danh mục con ẩn mặc định; nút mũi tên (.cat-tree__toggle) sổ/thu. Tên cha vẫn là link.
 {% endcomment %}
 {% for cat in items %}
-{% if current_category.pk == cat.pk %}{% comment %}active{% endcomment %}{% endif %}
-<li>
-  <a href="{{ cat.get_absolute_url }}"
-     style="display:block;padding:10px 20px;font-size:13.5px;color:{% if current_category.pk == cat.pk %}var(--accent){% else %}var(--text){% endif %};font-weight:{% if current_category.pk == cat.pk %}600{% else %}400{% endif %};border-left:3px solid {% if current_category.pk == cat.pk %}var(--accent){% else %}transparent{% endif %};transition:all 0.2s;"
-     onmouseover="this.style.background='var(--light)'"
-     onmouseout="this.style.background='transparent'">
-    {% if cat.icon %}<i class="{{ cat.icon }} me-2" style="color:var(--navy-light);width:16px;"></i>{% endif %}
-    {{ cat.name }}
-    <span style="float:right;font-size:11px;color:var(--text-muted);">({{ cat.products.count }})</span>
-  </a>
+<li class="cat-tree__item{% if cat.pk in open_category_ids %} is-open{% endif %}">
+  <div class="cat-tree__row">
+    <a href="{{ cat.get_absolute_url }}"
+       class="cat-tree__link{% if current_category.pk == cat.pk %} is-active{% endif %}">
+      {% if cat.icon %}<i class="{{ cat.icon }} cat-tree__icon"></i>{% endif %}
+      <span class="cat-tree__name">{{ cat.name }}</span>
+      <span class="cat-tree__count">({{ cat.products.count }})</span>
+    </a>
+    {% if cat.children_list %}
+    <button type="button" class="cat-tree__toggle" aria-label="Mở danh mục con"
+            aria-expanded="{% if cat.pk in open_category_ids %}true{% else %}false{% endif %}">
+      <i class="fas fa-chevron-down"></i>
+    </button>
+    {% endif %}
+  </div>
   {% if cat.children_list %}
-  <ul style="list-style:none;padding:0 0 0 16px;margin:0;">
-    {% include 'products/_cat_tree.html' with items=cat.children_list current_category=current_category %}
+  <ul class="cat-tree__children">
+    {% include 'products/_cat_tree.html' with items=cat.children_list current_category=current_category open_category_ids=open_category_ids %}
   </ul>
   {% endif %}
 </li>
