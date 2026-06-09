@@ -60,6 +60,10 @@
 @media (max-width: 991px) {
   .page-header { padding: 36px 0; }
   .page-header h1 { font-size: 26px; }
+
+  /* Product detail: bỏ sticky khi ảnh & info xếp chồng */
+  .product-gallery { position: static; }
+  .product-detail  { padding-top: 0; }
 }
 
 /* ============================================================
@@ -86,6 +90,15 @@
   .card-item img       { height: 170px; }
   .card-item .card-body { padding: 14px; }
   .card-item .card-title { font-size: 14.5px; }
+
+  /* Product detail */
+  .product-info__title   { font-size: 21px; margin-top: 4px; }
+  .product-info__lead    { font-size: 14.5px; }
+  .product-info__actions { gap: 10px; }
+  .product-info__actions .btn-primary-custom,
+  .product-info__actions .btn-phone { flex: 1 1 100%; justify-content: center; text-align: center; }
+  .product-gallery__thumb { width: 64px; height: 50px; }
+  .product-related        { margin-top: 36px; padding-top: 28px; }
 
   /* Stats */
   .stats-section  { padding: 24px 0; }

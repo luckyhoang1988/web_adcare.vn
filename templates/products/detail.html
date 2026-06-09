@@ -39,75 +39,72 @@
 
 {% block content %}
 
-<div class="page-header">
-  <div class="container">
-    <h1 style="font-size:26px;">{{ product.name }}</h1>
-  </div>
-</div>
-
 {% include 'components/breadcrumb.html' with breadcrumbs=breadcrumbs %}
 
-<section class="section-pad">
+<section class="section-pad product-detail">
   <div class="container">
     <div class="row g-5">
-      <!-- Image -->
+      <!-- Gallery -->
       <div class="col-lg-5">
-        <picture>
-          <source media="(max-width: 575px)" srcset="{{ product.image_mobile.url }}">
-          <img src="{{ product.image.url }}" alt="{{ product.name }}"
-               class="img-fluid rounded-3 shadow" style="width:100%;object-fit:cover;">
-        </picture>
-        {% if product.images.exists %}
-        <div class="d-flex gap-2 mt-3 flex-wrap">
-          {% for img in product.images.all %}
-          <img src="{{ img.image.url }}" alt="{{ img.alt|default:product.name }}"
-               style="width:80px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;border:2px solid var(--border);" loading="lazy">
-          {% endfor %}
+        <div class="product-gallery">
+          <picture>
+            <source media="(max-width: 575px)" srcset="{{ product.image_mobile.url }}">
+            <img id="pdMainImg" src="{{ product.image.url }}" alt="{{ product.name }}"
+                 class="product-gallery__main">
+          </picture>
+          {% if product.images.exists %}
+          <div class="product-gallery__thumbs">
+            <img class="product-gallery__thumb is-active" src="{{ product.image.url }}"
+                 data-full="{{ product.image.url }}" data-mobile="{{ product.image_mobile.url }}"
+                 alt="{{ product.name }}">
+            {% for img in product.images.all %}
+            <img class="product-gallery__thumb" src="{{ img.image.url }}"
+                 data-full="{{ img.image.url }}" data-mobile="{{ img.image_mobile.url }}"
+                 alt="{{ img.alt|default:product.name }}" loading="lazy">
+            {% endfor %}
+          </div>
+          {% endif %}
         </div>
-        {% endif %}
       </div>
 
       <!-- Info -->
       <div class="col-lg-7">
-        {% if product.brand %}
-        <div style="margin-bottom:12px;">
-          <span style="background:var(--navy);color:#fff;font-size:12px;padding:3px 12px;border-radius:4px;font-weight:600;">{{ product.brand }}</span>
-          {% if product.model_number %}
-          <span style="background:var(--light);color:var(--text-muted);font-size:12px;padding:3px 12px;border-radius:4px;margin-left:6px;">Model: {{ product.model_number }}</span>
-          {% endif %}
+        {% if product.brand or product.model_number %}
+        <div class="product-info__badges">
+          {% if product.brand %}<span class="product-badge product-badge--brand">{{ product.brand }}</span>{% endif %}
+          {% if product.model_number %}<span class="product-badge product-badge--model">Model: {{ product.model_number }}</span>{% endif %}
         </div>
         {% endif %}
 
-        <h1 style="font-size:24px;font-weight:700;color:var(--navy);margin-bottom:16px;">{{ product.name }}</h1>
+        <h1 class="product-info__title">{{ product.name }}</h1>
 
         {% if product.short_desc %}
-        <p style="color:var(--text-muted);font-size:15px;line-height:1.8;margin-bottom:20px;">{{ product.short_desc }}</p>
+        <p class="product-info__lead">{{ product.short_desc }}</p>
         {% endif %}
 
-        <div class="d-flex gap-3 flex-wrap mb-4">
+        <div class="product-info__actions">
           <a href="{% url 'contact' %}?subject=Tư vấn sản phẩm: {{ product.name }}"
              class="btn-primary-custom">
-            <i class="fas fa-phone-alt me-2"></i>Liên hệ tư vấn
+            <i class="fas fa-envelope me-2"></i>Liên hệ tư vấn
           </a>
           {% if site_config.phone %}
-          <a href="tel:{{ site_config.phone }}"
-             style="border:2px solid var(--navy);color:var(--navy);padding:10px 24px;border-radius:var(--radius);font-weight:600;font-size:14px;">
+          <a href="tel:{{ site_config.phone }}" class="btn-phone">
             <i class="fas fa-phone me-2"></i>{{ site_config.phone }}
           </a>
           {% endif %}
         </div>
 
         {% if product.description %}
-        <div style="border-top:1px solid var(--border);padding-top:20px;">
-          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:12px;">Mô tả chi tiết</h3>
-          <div style="color:var(--text-muted);line-height:1.9;font-size:14px;">{{ product.description|linebreaks }}</div>
+        <div class="product-block">
+          <h2 class="product-block__title">Mô tả chi tiết</h2>
+          <div class="product-block__body">{{ product.description|linebreaks }}</div>
         </div>
         {% endif %}
 
         {% if product.specifications %}
-        <div style="border-top:1px solid var(--border);padding-top:20px;margin-top:16px;">
-          <h3 style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:12px;">Thông số kỹ thuật</h3>
-          <div style="background:var(--light);border-radius:var(--radius);padding:16px;font-size:14px;color:var(--text);line-height:1.8;white-space:pre-line;">{{ product.specifications }}</div>
+        <div class="product-block">
+          <h2 class="product-block__title">Thông số kỹ thuật</h2>
+          <div class="product-specs">{{ product.specifications }}</div>
         </div>
         {% endif %}
       </div>
@@ -115,7 +112,7 @@
 
     <!-- Related products -->
     {% if related_products %}
-    <div class="mt-5 pt-4" style="border-top:2px solid var(--border);">
+    <div class="product-related">
       <h2 class="section-title mb-4">Sản phẩm liên quan</h2>
       <div class="row g-4">
         {% for rp in related_products %}
@@ -142,4 +139,23 @@
     {% endif %}
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+{% if product.images.exists %}
+<script>
+document.querySelectorAll('.product-gallery__thumb').forEach(function (thumb) {
+  thumb.addEventListener('click', function () {
+    var mainImg = document.getElementById('pdMainImg');
+    var source = mainImg.parentElement.querySelector('source');
+    mainImg.src = this.dataset.full;
+    if (source) source.srcset = this.dataset.mobile;
+    document.querySelectorAll('.product-gallery__thumb').forEach(function (t) {
+      t.classList.remove('is-active');
+    });
+    this.classList.add('is-active');
+  });
+});
+</script>
+{% endif %}
 {% endblock %}
