@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.products',
     'apps.services',
+    'apps.solutions',
     'apps.news',
     'apps.partners',
     'apps.contact',

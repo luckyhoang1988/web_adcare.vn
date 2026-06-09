@@ -1,0 +1,89 @@
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.urls import reverse
+from django_resized import ResizedImageField
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFit
+from apps.core.models import unique_slugify
+
+
+class SolutionCategory(models.Model):
+    name = models.CharField('Tên danh mục', max_length=200)
+    slug = models.SlugField('Slug', unique=True, blank=True)
+    parent = models.ForeignKey(
+        'self', null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='children', verbose_name='Danh mục cha',
+        help_text='Để trống = danh mục cấp 1. Chọn danh mục khác để biến mục này thành con.'
+    )
+    description = models.TextField('Mô tả', blank=True)
+    icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True)
+    image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='solutions/categories/', blank=True, quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
+    order = models.PositiveSmallIntegerField('Thứ tự', default=0)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
+    show_in_menu = models.BooleanField('Hiển thị trong menu', default=True,
+                                       help_text='Bật để danh mục này xuất hiện trong dropdown menu điều hướng.')
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = 'Danh mục giải pháp'
+        verbose_name_plural = 'Danh mục giải pháp'
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            self.slug = unique_slugify(self, self.name)
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        # Chống tự làm cha của mình + chống vòng lặp (đa cấp)
+        node = self.parent
+        while node is not None:
+            if node.pk == self.pk:
+                raise ValidationError({'parent': 'Không thể tạo vòng lặp danh mục cha–con.'})
+            node = node.parent
+
+    def get_ancestors(self):
+        """Chuỗi tổ tiên gốc → cha trực tiếp (cho breadcrumb)."""
+        chain, node = [], self.parent
+        while node is not None:
+            chain.append(node)
+            node = node.parent
+        return list(reversed(chain))
+
+    def get_absolute_url(self):
+        return reverse('solution_list') + f'?danh-muc={self.slug}'
+
+    def __str__(self):
+        return self.name
+
+
+class Solution(models.Model):
+    category = models.ForeignKey(SolutionCategory, on_delete=models.SET_NULL,
+                                 null=True, blank=True, related_name='solutions', verbose_name='Danh mục')
+    name = models.CharField('Tên giải pháp', max_length=300)
+    slug = models.SlugField('Slug', unique=True, blank=True)
+    short_desc = models.TextField('Mô tả ngắn', max_length=500, blank=True)
+    description = models.TextField('Mô tả chi tiết', blank=True)
+    image = ResizedImageField('Hình ảnh', size=[800, 600], upload_to='solutions/', quality=85)
+    image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(480, 360)], format='JPEG', options={'quality': 80})
+    icon = models.CharField('Icon (FontAwesome)', max_length=100, blank=True)
+    is_featured = models.BooleanField('Nổi bật (hiện trang chủ)', default=False)
+    is_active = models.BooleanField('Hiển thị', default=True, db_index=True)
+    order = models.PositiveSmallIntegerField('Thứ tự', default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', '-created_at']
+        verbose_name = 'Giải pháp'
+        verbose_name_plural = 'Giải pháp'
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug and self.name:
+            self.slug = unique_slugify(self, self.name)
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('solution_detail', kwargs={'slug': self.slug})

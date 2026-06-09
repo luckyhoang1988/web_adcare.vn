@@ -241,6 +241,7 @@ class MenuItem(models.Model):
         ('about', 'Về chúng tôi'),
         ('products', 'Sản phẩm (+ dropdown danh mục)'),
         ('services', 'Dịch vụ (+ dropdown danh mục)'),
+        ('solutions', 'Giải pháp (+ dropdown danh mục)'),
         ('projects', 'Dự án'),
         ('news', 'Tin tức'),
         ('contact', 'Liên hệ'),

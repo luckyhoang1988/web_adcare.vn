@@ -2,6 +2,7 @@ from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 from apps.products.models import Product
 from apps.services.models import Service
+from apps.solutions.models import Solution
 from apps.news.models import Article
 from apps.projects.models import Project
 
@@ -11,7 +12,7 @@ class StaticViewSitemap(Sitemap):
     changefreq = 'monthly'
 
     def items(self):
-        return ['home', 'about', 'product_list', 'service_list', 'news_list', 'project_list', 'contact']
+        return ['home', 'about', 'product_list', 'service_list', 'solution_list', 'news_list', 'project_list', 'contact']
 
     def location(self, item):
         return reverse(item)
@@ -36,6 +37,14 @@ class ServiceSitemap(Sitemap):
 
     def items(self):
         return Service.objects.filter(is_active=True).only('slug')
+
+
+class SolutionSitemap(Sitemap):
+    changefreq = 'monthly'
+    priority = 0.7
+
+    def items(self):
+        return Solution.objects.filter(is_active=True).only('slug')
 
 
 class ArticleSitemap(Sitemap):

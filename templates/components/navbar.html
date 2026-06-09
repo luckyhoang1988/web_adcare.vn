@@ -76,6 +76,19 @@
               </ul>
             </li>
 
+            {# ===== Menu có giải pháp built-in ===== #}
+            {% elif item.item_type == 'solutions' %}
+            <li class="nav-item dropdown{% if '/giai-phap/' in path %} active{% endif %}">
+              <a class="nav-link dropdown-toggle" href="{% url 'solution_list' %}" data-bs-toggle="dropdown">{{ item.title }}</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'solution_list' %}">Tất cả giải pháp</a></li>
+                {% if nav_solution_categories %}
+                <li><hr class="dropdown-divider"></li>
+                {% include 'components/_category_submenu.html' with items=nav_solution_categories %}
+                {% endif %}
+              </ul>
+            </li>
+
             {# ===== Menu có giới thiệu built-in ===== #}
             {% elif item.item_type == 'about' and nav_about_sections %}
             <li class="nav-item dropdown{% if '/ve-chung-toi/' in path %} active{% endif %}">
@@ -221,6 +234,13 @@
             </ul>
           </li>
           <li class="nav-item{% if '/dich-vu/' in path %} active{% endif %}"><a class="nav-link" href="{% url 'service_list' %}">Dịch vụ</a></li>
+          <li class="nav-item dropdown{% if '/giai-phap/' in path %} active{% endif %}">
+            <a class="nav-link dropdown-toggle" href="{% url 'solution_list' %}" data-bs-toggle="dropdown">Giải pháp</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'solution_list' %}">Tất cả giải pháp</a></li>
+              {% include 'components/_category_submenu.html' with items=nav_solution_categories %}
+            </ul>
+          </li>
           <li class="nav-item{% if '/du-an/' in path %} active{% endif %}"><a class="nav-link" href="{% url 'project_list' %}">Dự án</a></li>
           <li class="nav-item{% if '/tin-tuc/' in path %} active{% endif %}"><a class="nav-link" href="{% url 'news_list' %}">Tin tức</a></li>
           <li class="nav-item{% if '/lien-he/' in path %} active{% endif %}"><a class="nav-link" href="{% url 'contact' %}">Liên hệ</a></li>

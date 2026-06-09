@@ -34,9 +34,10 @@
   color: var(--text) !important;
   font-size: 13px;
   font-weight: 700;
-  padding: 22px 14px !important;
-  letter-spacing: 0.8px;
+  padding: 22px 11px !important;
+  letter-spacing: 0.4px;
   text-transform: uppercase;
+  white-space: nowrap;
   transition: var(--transition);
   position: relative;
 }
@@ -44,8 +45,8 @@
   content: '';
   position: absolute;
   bottom: 0;
-  left: 14px;
-  right: 14px;
+  left: 11px;
+  right: 11px;
   height: 3px;
   background: var(--accent);
   transform: scaleX(0);

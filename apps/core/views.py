@@ -3,6 +3,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from apps.products.models import Product
 from apps.services.models import Service
+from apps.solutions.models import Solution
 from apps.news.models import Article
 from apps.projects.models import Project
 from apps.partners.models import Partner
@@ -19,6 +20,7 @@ class HomeView(TemplateView):
         ctx['about'] = AboutSection.objects.filter(is_active=True).prefetch_related('features').first()
         ctx['featured_products'] = Product.objects.filter(is_featured=True, is_active=True).select_related('category')[:6]
         ctx['featured_services'] = Service.objects.filter(is_featured=True, is_active=True).select_related('category')[:6]
+        ctx['featured_solutions'] = Solution.objects.filter(is_featured=True, is_active=True).select_related('category')[:6]
         ctx['featured_projects'] = Project.objects.filter(is_featured=True, is_active=True).select_related('category')[:6]
         ctx['partners'] = Partner.objects.filter(is_active=True)[:12]
         ctx['recent_news'] = Article.objects.filter(status='published').select_related('category').order_by('-published_at')[:3]

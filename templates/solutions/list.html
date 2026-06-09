@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Giải pháp" }}{% endblock %}
+{% block meta_desc %}Các giải pháp an ninh toàn diện của ADCARE Việt Nam — tư vấn, thiết kế và triển khai hệ thống camera, kiểm soát an ninh tối ưu cho từng nhu cầu.{% endblock %}
+
+{% block content %}
+
+<div class="page-header text-center">
+  <div class="container">
+    <h1>{{ page_title|default:"Giải pháp" }}</h1>
+    <p>Giải pháp an ninh toàn diện cho mọi quy mô</p>
+  </div>
+</div>
+
+<section class="section-pad">
+  <div class="container">
+    {% if solutions %}
+    <div class="row g-4">
+      {% for solution in solutions %}
+      <div class="col-lg-4 col-md-6">
+        <div class="card-item">
+          <div class="card-img-wrap">
+            <a href="{{ solution.get_absolute_url }}">
+              <picture>
+                <source media="(max-width: 575px)" srcset="{{ solution.image_mobile.url }}">
+                <img src="{{ solution.image.url }}" alt="{{ solution.name }}" loading="lazy">
+              </picture>
+            </a>
+          </div>
+          <div class="card-body">
+            {% if solution.icon %}
+            <div style="font-size:24px;color:var(--accent);margin-bottom:8px;"><i class="{{ solution.icon }}"></i></div>
+            {% endif %}
+            <h3 class="card-title">
+              <a href="{{ solution.get_absolute_url }}" style="color:inherit;">{{ solution.name }}</a>
+            </h3>
+            {% if solution.short_desc %}<p class="card-text">{{ solution.short_desc }}</p>{% endif %}
+            <a href="{{ solution.get_absolute_url }}" class="card-link">Xem chi tiết <i class="fas fa-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% include 'components/pagination.html' %}
+
+    {% else %}
+    <div class="text-center py-5" style="color:var(--text-muted);">
+      <i class="fas fa-lightbulb" style="font-size:48px;margin-bottom:16px;color:var(--border);"></i>
+      <p>Chưa có giải pháp nào. Vui lòng quay lại sau.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

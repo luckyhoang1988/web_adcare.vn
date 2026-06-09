@@ -248,6 +248,49 @@
 </section>
 {% endif %}
 
+<!-- ===== 5a. GIẢI PHÁP TIÊU BIỂU ===== -->
+{% if featured_solutions %}
+<section class="section-pad bg-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title text-center">Giải pháp tiêu biểu</h2>
+      <p style="color:var(--text-muted);max-width:600px;margin:0 auto;">
+        Các giải pháp an ninh toàn diện, tối ưu cho từng nhu cầu thực tế
+      </p>
+    </div>
+    <div class="row g-4">
+      {% for solution in featured_solutions %}
+      <div class="col-lg-4 col-md-6">
+        <div class="card-item">
+          <div class="card-img-wrap">
+            <a href="{{ solution.get_absolute_url }}">
+              <picture>
+                <source media="(max-width: 575px)" srcset="{{ solution.image_mobile.url }}">
+                <img src="{{ solution.image.url }}" alt="{{ solution.name }}" loading="lazy">
+              </picture>
+            </a>
+          </div>
+          <div class="card-body">
+            {% if solution.icon %}
+            <div style="font-size:24px;color:var(--accent);margin-bottom:8px;"><i class="{{ solution.icon }}"></i></div>
+            {% endif %}
+            <h3 class="card-title">
+              <a href="{{ solution.get_absolute_url }}" style="color:inherit;">{{ solution.name }}</a>
+            </h3>
+            {% if solution.short_desc %}<p class="card-text">{{ solution.short_desc|truncatechars:120 }}</p>{% endif %}
+            <a href="{{ solution.get_absolute_url }}" class="card-link">Xem thêm <i class="fas fa-arrow-right ms-1"></i></a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{% url 'solution_list' %}" class="btn-outline-custom">Xem tất cả giải pháp</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <!-- ===== 5b. DỰ ÁN TIÊU BIỂU ===== -->
 {% if featured_projects %}
 <section class="section-pad bg-light">

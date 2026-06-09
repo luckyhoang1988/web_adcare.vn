@@ -4,6 +4,7 @@ from .models import SiteConfig, MenuItem
 from .models import build_category_tree
 from apps.products.models import ProductCategory
 from apps.services.models import ServiceCategory, Service
+from apps.solutions.models import SolutionCategory
 from apps.projects.models import ProjectCategory
 from apps.news.models import NewsCategory
 from .models import AboutSection
@@ -25,6 +26,9 @@ def site_config(request):
             ),
             'nav_service_categories': build_category_tree(
                 list(ServiceCategory.objects.filter(is_active=True, show_in_menu=True).order_by('order'))
+            ),
+            'nav_solution_categories': build_category_tree(
+                list(SolutionCategory.objects.filter(is_active=True, show_in_menu=True).order_by('order'))
             ),
             'nav_project_categories': list(ProjectCategory.objects.filter(is_active=True, show_in_menu=True).order_by('order')),
             'nav_news_categories': list(NewsCategory.objects.filter(is_active=True, show_in_menu=True).order_by('order')),

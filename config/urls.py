@@ -4,12 +4,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
-from apps.core.sitemaps import StaticViewSitemap, ProductSitemap, ServiceSitemap, ArticleSitemap, ProjectSitemap
+from apps.core.sitemaps import StaticViewSitemap, ProductSitemap, ServiceSitemap, SolutionSitemap, ArticleSitemap, ProjectSitemap
 
 sitemaps = {
     'static': StaticViewSitemap,
     'products': ProductSitemap,
     'services': ServiceSitemap,
+    'solutions': SolutionSitemap,
     'articles': ArticleSitemap,
     'projects': ProjectSitemap,
 }
@@ -19,6 +20,7 @@ urlpatterns = [
     path('', include('apps.core.urls')),
     path('san-pham/', include('apps.products.urls')),
     path('dich-vu/', include('apps.services.urls')),
+    path('giai-phap/', include('apps.solutions.urls')),
     path('tin-tuc/', include('apps.news.urls')),
     path('lien-he/', include('apps.contact.urls')),
     path('du-an/', include('apps.projects.urls')),
