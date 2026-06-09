@@ -134,6 +134,12 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='ADCARE Website <no-re
 # Địa chỉ nhận thông báo khi có liên hệ mới (để trống = không gửi)
 CONTACT_NOTIFY_EMAIL = config('CONTACT_NOTIFY_EMAIL', default='')
 
+# Tự động kéo RSS + AI viết lại (apps/news/services.py) — dùng LLM OpenAI-compatible.
+# Mặc định Google Gemini (free tier). Đổi Groq/OpenRouter chỉ bằng 3 biến này.
+RSS_AI_API_KEY = config('RSS_AI_API_KEY', default='')
+RSS_AI_BASE_URL = config('RSS_AI_BASE_URL', default='https://generativelanguage.googleapis.com/v1beta/openai/')
+RSS_AI_MODEL = config('RSS_AI_MODEL', default='gemini-2.0-flash')
+
 X_FRAME_OPTIONS = 'DENY'
 
 if not DEBUG:

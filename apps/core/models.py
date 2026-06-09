@@ -43,14 +43,17 @@ def unique_slugify(instance, value, slug_field='slug'):
 
     - Dùng vi_slugify (tiếng Việt có dấu → ASCII sạch).
     - Fallback khi rỗng (emoji/CJK/ký tự lạ): dùng tên model → tránh slug '' gây 404.
+    - Cắt theo max_length của field (chừa chỗ cho hậu tố -N) → không tràn cột DB.
     - Lặp -2, -3, ... cho tới khi không trùng (loại trừ chính bản ghi này).
     """
-    base = vi_slugify(value) or instance._meta.model_name
     Model = instance.__class__
+    max_length = Model._meta.get_field(slug_field).max_length or 50
+    base = (vi_slugify(value) or instance._meta.model_name)[:max_length].rstrip('-')
     slug = base
     i = 2
     while Model.objects.filter(**{slug_field: slug}).exclude(pk=instance.pk).exists():
-        slug = f'{base}-{i}'
+        suffix = f'-{i}'
+        slug = f'{base[:max_length - len(suffix)].rstrip("-")}{suffix}'
         i += 1
     return slug
 

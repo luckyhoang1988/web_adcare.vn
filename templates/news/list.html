@@ -38,10 +38,14 @@
         <div class="card-item">
           <div class="card-img-wrap">
             <a href="{{ article.get_absolute_url }}">
+              {% if article.image %}
               <picture>
                 <source media="(max-width: 575px)" srcset="{{ article.image_mobile.url }}">
                 <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
               </picture>
+              {% else %}
+              <div class="card-img-ph"><i class="fas fa-newspaper"></i></div>
+              {% endif %}
             </a>
           </div>
           <div class="card-body">

@@ -108,7 +108,7 @@ find media/ -type f -exec chmod 644 {} \;
 | `core` | `SiteConfig` · `Slider` · `StatItem` · `AboutSection` · `AboutFeature` · **`MenuItem`** |
 | `products` | `ProductCategory` → `Product` → `ProductImage` |
 | `services` | `ServiceCategory` → `Service` |
-| `news` | `NewsCategory` → `Article` (status: draft/published) |
+| `news` | `NewsCategory` → `Article` (status: draft/published) · **`RssSource`** (kéo RSS + AI viết lại) |
 | `projects` | `ProjectCategory` → `Project` → `ProjectImage` |
 | `partners` | `Partner` (logo carousel — không có urls.py riêng) |
 | `contact` | `ContactMessage` + `ContactForm` |
@@ -318,6 +318,25 @@ EMAIL_HOST_USER=...      EMAIL_HOST_PASSWORD=...   # Gmail dùng App Password
 DEFAULT_FROM_EMAIL=ADCARE Website <no-reply@adcare.vn>
 CONTACT_NOTIFY_EMAIL=admin@adcare.vn                        # nơi nhận thông báo liên hệ
 ```
+
+## Tự động kéo RSS + AI viết lại (`apps/news`)
+
+Kéo bài từ nguồn RSS ngoài về **danh mục được chỉ định**, dùng Claude API viết lại thành bài nguyên gốc, **lưu nháp** để admin duyệt. **Chỉ chạy tay** qua nút trong Admin (không cron/timer).
+
+- **Model `RssSource`** (Admin → **Nguồn RSS**): `name`, `feed_url`, `category` (danh mục đích), `author` (ghi đè), `max_items`, `use_ai` (bật = AI viết lại; tắt = lưu HTML thô đã sanitize), `ai_instructions`, `is_active`, `order`, `last_fetched_at`.
+- **Article + 3 field truy vết:** `source` (FK), `source_guid` (dedup khi fetch lại), `source_url`.
+- **Service `apps/news/services.py`** — dùng chung bởi command + admin action:
+  - `fetch_source(source, dry_run=False)` → `{created, skipped, errors}`. Dedup theo `source_guid`. Ảnh: media_content → media_thumbnail → enclosure → `<img>` đầu tiên, tải bằng urllib + `ContentFile`.
+  - `rewrite_with_ai(title, raw, instructions)` — LLM **OpenAI-compatible** (`openai` SDK), JSON mode trả `{title, content_html, summary}`. Mặc định **Google Gemini 2.0 Flash** (free tier). Đổi provider chỉ qua `.env` (Groq/OpenRouter/local Ollama) — không sửa code.
+  - `clean_html(html)` — **bleach** allowlist, BẮT BUỘC sanitize mọi `content` (vì `news/detail.html` render `|safe`) → chống stored XSS.
+- **Admin action** "🔄 Lấy bài ngay" (`RssSourceAdmin.fetch_now`) — chạy đồng bộ; `use_ai` + nhiều bài → vài chục giây, đặt `max_items` vừa phải.
+- **Command** `python manage.py fetch_rss [--source <id>] [--dry-run]` — test local / chạy tay VPS.
+- **Config `.env`** (xem `.env.example`): `RSS_AI_API_KEY` (bắt buộc nếu `use_ai`), `RSS_AI_BASE_URL` (mặc định Gemini), `RSS_AI_MODEL` (mặc định `gemini-2.0-flash`). Free tier có giới hạn req/phút → đặt `max_items` nhỏ.
+- **Deps mới:** `feedparser`, `bleach`, `beautifulsoup4`, `openai`.
+
+> Bài kéo về luôn `status='draft'` → duyệt bằng action `make_published` của `ArticleAdmin`. `RssSourceAdmin` **không** cần `ClearMenuCacheMixin` (Article không feed `global_nav`).
+
+---
 
 ## Trang chủ (`HomeView` · `templates/core/home.html`)
 

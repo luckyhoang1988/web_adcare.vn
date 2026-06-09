@@ -38,10 +38,11 @@ class Article(models.Model):
     category = models.ForeignKey(NewsCategory, on_delete=models.SET_NULL,
                                   null=True, blank=True, related_name='articles', verbose_name='Danh mục')
     title = models.CharField('Tiêu đề', max_length=300)
-    slug = models.SlugField('Slug', unique=True, blank=True)
+    slug = models.SlugField('Slug', max_length=200, unique=True, blank=True)
     summary = models.TextField('Tóm tắt', max_length=500, blank=True)
     content = models.TextField('Nội dung')
-    image = ResizedImageField('Ảnh đại diện', size=[1200, 630], upload_to='news/', quality=85)
+    image = ResizedImageField('Ảnh đại diện', size=[1200, 630], upload_to='news/', quality=85,
+                              force_format='JPEG')
     image_mobile = ImageSpecField(source='image', processors=[ResizeToFit(576, 302)], format='JPEG', options={'quality': 80})
     author = models.CharField('Tác giả', max_length=100, default='ADCARE Việt Nam')
     status = models.CharField('Trạng thái', max_length=20, choices=STATUS_CHOICES, default='draft', db_index=True)
@@ -52,6 +53,10 @@ class Article(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     meta_title = models.CharField('Meta Title', max_length=200, blank=True)
     meta_desc = models.TextField('Meta Description', max_length=300, blank=True)
+    source = models.ForeignKey('RssSource', on_delete=models.SET_NULL,
+                               null=True, blank=True, related_name='articles', verbose_name='Nguồn nhập')
+    source_guid = models.CharField('GUID nguồn', max_length=500, blank=True, db_index=True)
+    source_url = models.URLField('Link gốc', max_length=500, blank=True)
 
     class Meta:
         ordering = ['-published_at', '-created_at']
@@ -73,3 +78,30 @@ class Article(models.Model):
         self.status = 'published'
         self.published_at = timezone.now()
         self.save()
+
+
+class RssSource(models.Model):
+    name = models.CharField('Tên nguồn', max_length=200)
+    feed_url = models.URLField('URL RSS feed', max_length=500)
+    category = models.ForeignKey(NewsCategory, on_delete=models.SET_NULL,
+                                 null=True, blank=True, related_name='rss_sources',
+                                 verbose_name='Danh mục đích')
+    author = models.CharField('Tác giả (ghi đè)', max_length=100, blank=True,
+                              help_text='Để trống → dùng tác giả của feed hoặc mặc định.')
+    max_items = models.PositiveSmallIntegerField('Số bài tối đa mỗi lần', default=10)
+    use_ai = models.BooleanField('Dùng AI viết lại', default=True,
+                                 help_text='Bật: Claude viết lại thành bài nguyên gốc. Tắt: lưu nội dung gốc (đã làm sạch HTML).')
+    ai_instructions = models.TextField('Chỉ dẫn cho AI', blank=True,
+                                       help_text='Giọng văn, độ dài, từ khóa SEO… thêm cho AI khi viết lại.')
+    is_active = models.BooleanField('Kích hoạt', default=True, db_index=True)
+    order = models.PositiveSmallIntegerField('Thứ tự', default=0)
+    last_fetched_at = models.DateTimeField('Lần lấy gần nhất', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = 'Nguồn RSS'
+        verbose_name_plural = 'Nguồn RSS'
+
+    def __str__(self):
+        return self.name
