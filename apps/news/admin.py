@@ -1,11 +1,27 @@
+import logging
+import threading
+
 from django import forms
 from django.contrib import admin
+from django.db import connection
 from django.utils import timezone
 from django.utils.html import mark_safe
 from ckeditor.widgets import CKEditorWidget
 from .models import NewsCategory, Article, RssSource
 from .services import fetch_source
 from apps.core.admin_utils import ClearMenuCacheMixin, DuplicateMixin, make_duplicate_action
+
+logger = logging.getLogger(__name__)
+
+
+def _fetch_sources_bg(source_ids):
+    """Chạy nền: lấy bài cho từng nguồn (AI mất thời gian → tránh timeout request)."""
+    for sid in source_ids:
+        try:
+            fetch_source(RssSource.objects.get(pk=sid))
+        except Exception:
+            logger.exception('fetch_now (nền) lỗi ở nguồn id=%s', sid)
+    connection.close()  # đóng kết nối DB của thread sau khi xong
 
 
 class ArticleAdminForm(forms.ModelForm):
@@ -83,15 +99,12 @@ class RssSourceAdmin(DuplicateMixin, admin.ModelAdmin):
     article_count.short_description = 'Số bài'
 
     def fetch_now(self, request, queryset):
-        total = {'created': 0, 'skipped': 0, 'errors': 0}
-        for source in queryset:
-            stats = fetch_source(source)
-            for k in total:
-                total[k] += stats[k]
-        msg = (f"Đã lấy bài: tạo {total['created']} · "
-               f"trùng {total['skipped']} · lỗi {total['errors']}.")
-        if total['errors']:
-            self.message_user(request, msg, level='warning')
-        else:
-            self.message_user(request, msg)
+        # Chạy nền: AI viết lại/dịch mất thời gian, làm đồng bộ sẽ vượt timeout gunicorn (30s).
+        ids = list(queryset.values_list('pk', flat=True))
+        threading.Thread(target=_fetch_sources_bg, args=(ids,), daemon=True).start()
+        self.message_user(
+            request,
+            f'Đang lấy bài từ {len(ids)} nguồn ở chế độ nền (AI cần thời gian). '
+            f'Làm mới trang sau 1–2 phút để xem cột "Số bài" và "Lần lấy gần nhất" cập nhật.'
+        )
     fetch_now.short_description = '🔄 Lấy bài ngay từ nguồn đã chọn'
