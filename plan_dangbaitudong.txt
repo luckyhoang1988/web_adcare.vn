@@ -1,0 +1,147 @@
+Plan: Tự động kéo bài từ RSS/web về danh mục tin tức (lưu nháp để duyệt)
+Context
+Hiện tại mọi bài viết trên apps/news được nhập tay qua admin. Khách muốn tự động kéo nội dung từ các nguồn RSS/web ngoài về website, gán vào danh mục NewsCategory được chỉ định, để giảm công sức cập nhật tin tức.
+
+Quyết định đã chốt với người dùng:
+
+Nguồn: RSS/web ngoài.
+Sau khi kéo về: lưu draft (status='draft') để admin duyệt → bấm đăng. KHÔNG auto-publish.
+Nội dung: lấy toàn bộ nội dung bài (full HTML + ảnh).
+Khai báo nguồn: tạo model quản lý trong Admin (URL feed + danh mục đích + bật/tắt), không hardcode.
+Cơ chế chạy định kỳ: management command + systemd timer trên VPS (gọn nhẹ, không thêm Celery/Redis — đúng hạ tầng hiện có).
+Hạ tầng hiện tại: chưa có Celery/cron/AI; VPS chạy adcare.service (gunicorn + systemd), có sẵn python3 manage.py trong venv. Lệnh tải ảnh apps/core/management/commands/fetch_images.py đã có sẵn pattern download bằng urllib + ContentFile để tái dùng.
+
+⚠️ Bảo mật bắt buộc: template templates/news/detail.html render nội dung bằng {{ article.content|safe }}. Vì ta kéo HTML từ nguồn không tin cậy, nội dung phải được sanitize (allowlist tag/attr) trước khi lưu, nếu không sẽ dính stored XSS. Đây là điểm quan trọng nhất của plan.
+
+Phần 1 — Model
+1.1 Model mới RssSource (trong apps/news/models.py)
+Khai báo nguồn RSS, quản lý hoàn toàn trong admin:
+
+Field	Kiểu	Ghi chú
+name	CharField(200)	Tên nguồn (vd "VnExpress Số hóa")
+feed_url	URLField	URL RSS feed
+category	FK(NewsCategory, on_delete=SET_NULL, null, blank)	Danh mục đích — bài kéo về gán vào đây
+author	CharField(100, blank)	Ghi đè tác giả; trống → dùng tác giả feed hoặc mặc định
+max_items	PositiveSmallIntegerField(default=10)	Số bài tối đa mỗi lần fetch
+auto_publish	BooleanField(default=False)	Mặc định False (lưu nháp). Để sẵn cho tương lai nếu muốn bật auto-publish theo nguồn
+is_active	BooleanField(default=True, db_index=True)	Theo rule apps/CLAUDE.md
+order	PositiveSmallIntegerField(default=0)	Theo rule
+last_fetched_at	DateTimeField(null, blank)	Cập nhật sau mỗi lần chạy (readonly trong admin)
+created_at	DateTimeField(auto_now_add=True)	Theo rule
+Meta.ordering = ['order'], verbose_name "Nguồn RSS".
+
+1.2 Thêm field vào Article (chống trùng + truy vết nguồn)
+source = models.ForeignKey('RssSource', on_delete=models.SET_NULL, null=True, blank=True,
+                           related_name='articles', verbose_name='Nguồn nhập')
+source_guid = models.CharField('GUID nguồn', max_length=500, blank=True, db_index=True)
+source_url = models.URLField('Link gốc', max_length=500, blank=True)
+source_guid: lưu entry.id (hoặc entry.link nếu feed không có id) — dùng để chống trùng khi fetch lại.
+source_url: link bài gốc (hữu ích để đối chiếu/ghi nguồn sau này).
+Tất cả nullable/blank, không unique → migration an toàn trên PostgreSQL VPS đã có data (không cần quy trình "fix migration unique").
+1.3 Migration
+python manage.py makemigrations news && python manage.py migrate (local). VPS chạy migrate khi deploy — an toàn vì field nullable.
+
+Phần 2 — Management command fetch_rss
+File mới: apps/news/management/commands/fetch_rss.py
+
+Tham số:
+
+--source <id>: chỉ chạy 1 nguồn (mặc định: tất cả nguồn is_active=True).
+--dry-run: chỉ in ra sẽ tạo gì, không lưu.
+Luồng xử lý mỗi nguồn:
+
+feedparser.parse(source.feed_url) → lấy entries (giới hạn source.max_items).
+Mỗi entry:
+guid = entry.get('id') or entry.get('link'). Nếu Article.objects.filter(source_guid=guid).exists() → bỏ qua (chống trùng).
+title = entry.title (cắt ≤300 ký tự).
+Nội dung full: entry.content[0].value nếu có, không thì entry.summary.
+Sanitize HTML bằng bleach với allowlist: p, br, a, strong, b, em, i, u, ul, ol, li, h2, h3, h4, blockquote, img, figure, figcaption, table, thead, tbody, tr, td, th; attrs cho phép: a[href,title], img[src,alt,title]; protocols http,https. → gán content.
+summary: strip_tags(content) rút gọn ≤300 ký tự (dùng cho list/meta_desc).
+Ảnh đại diện: tìm theo thứ tự media_content → media_thumbnail → enclosure → <img> đầu tiên trong nội dung (parse bằng BeautifulSoup). Tải bằng helper urllib (tái dùng pattern _fetch trong fetch_images.py) → ContentFile → gán vào article.image (ResizedImageField tự resize 1200×630, ImageSpecField tự tạo mobile). Nếu tải lỗi → bỏ qua ảnh (không chặn tạo bài).
+author: source.author nếu có, else entry.get('author'), else mặc định model.
+category = source.category, source = source, source_guid, source_url = entry.link.
+status = 'published' if source.auto_publish else 'draft' (hiện tại luôn draft); published_at để None khi draft.
+meta_title = title[:200], meta_desc = summary[:300].
+slug: để model save() tự sinh qua vi_slugify (đã có sẵn xử lý trùng slug).
+Lưu.
+source.last_fetched_at = timezone.now(); source.save(update_fields=['last_fetched_at']).
+In thống kê: số bài mới / bỏ qua trùng / lỗi.
+Tái dùng: copy helper download _fetch(url, filename) từ fetch_images.py (urllib + User-Agent + ContentFile).
+
+Phần 3 — Admin
+File: apps/news/admin.py
+
+3.1 RssSourceAdmin (mới)
+Kế thừa DuplicateMixin (theo rule apps/CLAUDE.md). KHÔNG cần ClearMenuCacheMixin (không feed vào global_nav).
+list_display = ('name', 'category', 'is_active', 'order', 'max_items', 'auto_publish', 'last_fetched_at', 'article_count', 'copy_link')
+list_editable = ('is_active', 'order') (theo rule).
+list_filter = ('is_active', 'category'), search_fields = ('name', 'feed_url').
+readonly_fields = ('last_fetched_at',).
+Action thủ công fetch_now: "🔄 Lấy bài ngay từ nguồn đã chọn" — gọi lại logic command đồng bộ cho các nguồn được chọn (để chạy tay không cần đợi timer), báo messages số bài đã tạo. Tách logic command ra hàm dùng chung để cả command và action gọi được (vd hàm fetch_source(source, dry_run=False) trong apps/news/services.py hoặc trong command module).
+3.2 Cập nhật ArticleAdmin
+Thêm 'source' vào list_filter để lọc bài theo nguồn.
+Thêm fieldset thu gọn "Nguồn nhập": ('source', 'source_url', 'source_guid') với classes=('collapse',); đặt source_guid readonly.
+(Giữ nguyên action make_published sẵn có để duyệt → đăng hàng loạt.)
+Phần 4 — Dependencies
+Thêm vào requirements.txt:
+
+feedparser>=6.0      # parse RSS/Atom
+bleach>=6.0          # sanitize HTML (chống stored XSS) — BẮT BUỘC
+beautifulsoup4>=4.12 # trích ảnh/strip tag từ nội dung feed
+Không thêm requests — tái dùng urllib như fetch_images.py. VPS: pip install -r requirements.txt khi deploy.
+
+Phần 5 — Lên lịch chạy định kỳ (systemd timer trên VPS)
+Tạo 2 file mẫu trong repo deploy/ (để tham chiếu & version) + copy lên /etc/systemd/system/ khi deploy:
+
+deploy/adcare-fetchrss.service (oneshot, chạy dưới user adcare, trong venv):
+
+[Unit]
+Description=ADCARE fetch RSS articles
+After=network.target
+
+[Service]
+Type=oneshot
+User=adcare
+WorkingDirectory=/home/adcare/web_adcare.vn
+ExecStart=/home/adcare/web_adcare.vn/venv/bin/python3 manage.py fetch_rss
+deploy/adcare-fetchrss.timer (vd mỗi giờ):
+
+[Unit]
+Description=Run ADCARE fetch RSS hourly
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+Kích hoạt trên VPS:
+
+sudo cp deploy/adcare-fetchrss.* /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now adcare-fetchrss.timer
+systemctl list-timers | grep fetchrss   # kiểm tra
+Local dev: chạy tay python manage.py fetch_rss để test (không cần timer).
+
+Phần 6 — Cập nhật tài liệu
+Thêm mục "Tự động kéo RSS" vào .claude/CLAUDE.md: model RssSource, lệnh fetch_rss, lưu ý sanitize, systemd timer.
+Ghi bước cài timer vào quy trình deploy.
+Files thay đổi (tóm tắt)
+File	Thay đổi
+apps/news/models.py	+ model RssSource; + 3 field vào Article
+apps/news/migrations/000X_*.py	(tự sinh)
+apps/news/management/commands/fetch_rss.py	mới — command
+apps/news/services.py	mới (tùy chọn) — hàm fetch_source() dùng chung cho command + admin action
+apps/news/admin.py	+ RssSourceAdmin + action fetch_now; cập nhật ArticleAdmin
+requirements.txt	+ feedparser, bleach, beautifulsoup4
+deploy/adcare-fetchrss.service / .timer	mới — mẫu systemd
+.claude/CLAUDE.md	+ tài liệu
+Verification (kiểm thử end-to-end)
+pip install -r requirements.txt → makemigrations news → migrate.
+Vào Admin → Nguồn RSS → thêm 1 nguồn thật (vd feed tin công nghệ/an ninh tiếng Việt), chọn danh mục đích, is_active=True.
+Chạy python manage.py fetch_rss → kiểm tra terminal in số bài tạo.
+Admin → Bài viết: thấy các bài mới status=draft, có nội dung + ảnh + đúng danh mục, lọc theo "Nguồn nhập" được.
+Chạy lại fetch_rss → không tạo trùng (dedup theo source_guid).
+Mở 1 draft, kiểm tra nội dung HTML đã sạch (không còn script/style), bấm make_published → xem bài hiển thị trên /tin-tuc/ và trang chi tiết.
+Test admin action "🔄 Lấy bài ngay" trên nguồn đã chọn → tạo bài đồng bộ.
+(VPS) cài timer, systemctl list-timers thấy lịch chạy; chạy thử sudo systemctl start adcare-fetchrss.service rồi xem log journalctl -u adcare-fetchrss.
