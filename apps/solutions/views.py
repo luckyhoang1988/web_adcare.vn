@@ -43,7 +43,7 @@ class SolutionDetailView(DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['other_solutions'] = Solution.objects.filter(is_active=True).select_related('category').exclude(
-            pk=self.object.pk)[:4]
+            pk=self.object.pk)[:10]
         cat = self.object.category
         crumbs = [{'name': 'Giải pháp', 'url': reverse('solution_list')}]
         if cat:
