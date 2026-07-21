@@ -52,7 +52,7 @@
         <picture>
           <source media="(max-width: 575px)" srcset="{{ solution.image_mobile.url }}">
           <img src="{{ solution.image.url }}" alt="{{ solution.name }}"
-               class="img-fluid rounded-3 shadow mb-4" style="width:100%;max-height:400px;object-fit:cover;">
+               class="img-fluid rounded-3 shadow mb-4" style="width:100%;max-height:400px;object-fit:contain;background:var(--light);">
         </picture>
         {% endif %}
         <h2 style="font-size:22px;font-weight:700;color:var(--navy);margin-bottom:16px;">{{ solution.name }}</h2>
