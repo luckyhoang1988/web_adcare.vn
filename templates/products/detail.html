@@ -97,7 +97,7 @@
         {% if product.description %}
         <div class="product-block">
           <h2 class="product-block__title">Mô tả chi tiết</h2>
-          <div class="product-block__body">{{ product.description|linebreaks }}</div>
+          <div class="product-block__body">{{ product.description|safe }}</div>
         </div>
         {% endif %}
 

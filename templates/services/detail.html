@@ -52,12 +52,12 @@
         <picture>
           <source media="(max-width: 575px)" srcset="{{ service.image_mobile.url }}">
           <img src="{{ service.image.url }}" alt="{{ service.name }}"
-               class="img-fluid rounded-3 shadow mb-4" style="width:100%;max-height:400px;object-fit:cover;">
+               class="img-fluid rounded-3 shadow mb-4" style="width:100%;max-height:400px;object-fit:contain;background:var(--light);">
         </picture>
         {% endif %}
         <h2 style="font-size:22px;font-weight:700;color:var(--navy);margin-bottom:16px;">{{ service.name }}</h2>
         {% if service.description %}
-        <div style="color:var(--text-muted);line-height:1.9;">{{ service.description|linebreaks }}</div>
+        <div style="color:var(--text-muted);line-height:1.9;">{{ service.description|safe }}</div>
         {% elif service.short_desc %}
         <div style="color:var(--text-muted);line-height:1.9;">{{ service.short_desc }}</div>
         {% endif %}
