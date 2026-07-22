@@ -447,9 +447,21 @@ img { max-width: 100%; height: auto; }
   overflow: hidden;
   transition: var(--transition);
   border: 1px solid rgba(255,255,255,0.08);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .service-card-inner:hover {
   background: rgba(255,255,255,0.1);
+}
+.service-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.service-card-body > a {
+  margin-top: auto;
 }
 
 /* Solutions swiper — nav arrows on dark section background */
