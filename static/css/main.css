@@ -460,6 +460,10 @@ img { max-width: 100%; height: auto; }
   flex-direction: column;
   flex: 1;
 }
+.service-card-body h3 {
+  line-height: 1.4;
+  min-height: 4.2em; /* giữ chỗ cho tối đa 3 dòng — tiêu đề ngắn tự giãn bằng tiêu đề dài */
+}
 .service-card-body > a {
   margin-top: auto;
 }
