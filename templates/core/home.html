@@ -446,36 +446,38 @@
 
 {% block extra_js %}
 <script>
-  // Swiper for partners
-  new Swiper('.partnersSwiper', {
-    slidesPerView: 2,
-    spaceBetween: 16,
-    loop: true,
-    autoplay: { delay: 2500, disableOnInteraction: false },
-    breakpoints: {
-      576: { slidesPerView: 3 },
-      768: { slidesPerView: 4 },
-      992: { slidesPerView: 5 },
-      1200: { slidesPerView: 6 },
-    }
-  });
+  document.addEventListener('DOMContentLoaded', function () {
+    // Swiper for partners
+    new Swiper('.partnersSwiper', {
+      slidesPerView: 2,
+      spaceBetween: 16,
+      loop: true,
+      autoplay: { delay: 2500, disableOnInteraction: false },
+      breakpoints: {
+        576: { slidesPerView: 3 },
+        768: { slidesPerView: 4 },
+        992: { slidesPerView: 5 },
+        1200: { slidesPerView: 6 },
+      }
+    });
 
-  // Swiper for featured solutions
-  new Swiper('.solutionsSwiper', {
-    slidesPerView: 1.15,
-    spaceBetween: 20,
-    loop: true,
-    navigation: {
-      nextEl: '.solutionsSwiper .swiper-button-next',
-      prevEl: '.solutionsSwiper .swiper-button-prev',
-    },
-    autoplay: { delay: 3500, disableOnInteraction: false },
-    breakpoints: {
-      576: { slidesPerView: 2 },
-      768: { slidesPerView: 3 },
-      992: { slidesPerView: 4 },
-      1200: { slidesPerView: 5 },
-    }
+    // Swiper for featured solutions
+    new Swiper('.solutionsSwiper', {
+      slidesPerView: 1.15,
+      spaceBetween: 20,
+      loop: true,
+      navigation: {
+        nextEl: '.solutionsSwiper .swiper-button-next',
+        prevEl: '.solutionsSwiper .swiper-button-prev',
+      },
+      autoplay: { delay: 3500, disableOnInteraction: false },
+      breakpoints: {
+        576: { slidesPerView: 2 },
+        768: { slidesPerView: 3 },
+        992: { slidesPerView: 4 },
+        1200: { slidesPerView: 5 },
+      }
+    });
   });
 </script>
 {% endblock %}
