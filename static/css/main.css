@@ -462,7 +462,11 @@ img { max-width: 100%; height: auto; }
 }
 .service-card-body h3 {
   line-height: 1.4;
-  min-height: 4.2em; /* giữ chỗ cho tối đa 3 dòng — tiêu đề ngắn tự giãn bằng tiêu đề dài */
+  height: 4.2em; /* chiều cao cố định 3 dòng — tiêu đề ngắn để trống bên dưới, tiêu đề dài bị cắt bớt */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 .service-card-body > a {
   margin-top: auto;
