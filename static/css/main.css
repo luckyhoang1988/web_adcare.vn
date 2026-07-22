@@ -452,6 +452,31 @@ img { max-width: 100%; height: auto; }
   background: rgba(255,255,255,0.1);
 }
 
+/* Solutions swiper — nav arrows on dark section background */
+.solutions-swiper-nav {
+  padding: 4px 4px 8px;
+}
+.solutions-swiper-nav .swiper-button-next,
+.solutions-swiper-nav .swiper-button-prev {
+  --swiper-navigation-size: 16px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50%;
+  color: var(--white);
+  transition: var(--transition);
+}
+.solutions-swiper-nav .swiper-button-next:hover,
+.solutions-swiper-nav .swiper-button-prev:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.solutions-swiper-nav .swiper-button-next.swiper-button-disabled,
+.solutions-swiper-nav .swiper-button-prev.swiper-button-disabled {
+  opacity: 0.3;
+}
+
 /* ==============================
    Product detail
    ============================== */
